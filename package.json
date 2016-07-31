@@ -1,0 +1,32 @@
+{
+  "jspm": {
+    "name": "redux-router",
+    "main": "redux-router.js",
+    "devDependencies": {
+      "plugin-babel": "npm:systemjs-plugin-babel@^0.0.12"
+    }
+  },
+  "name": "router-redux",
+  "description": "transform route change as redux action.",
+  "version": "0.9.0",
+  "main": "jspm.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/subuta/router-redux.git"
+  },
+  "keywords": [
+    "redux",
+    "router",
+    "page",
+    "route"
+  ],
+  "author": "subuta <shunta.3110@gmail.com> (https://github.com/subuta)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/subuta/router-redux/issues"
+  },
+  "homepage": "https://github.com/subuta/router-redux#readme"
+}
