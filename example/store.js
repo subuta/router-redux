@@ -1,10 +1,9 @@
 import {createStore, applyMiddleware, compose} from 'redux';
 import injectCreator from 'redux-virtual-dom';
-import {routerMiddleware} from 'lib/index.js';
+import routerCreator, {routerMiddlewareCreator} from 'lib/index.js';
 
 import reducer from './reducers/index.js';
-const router = routerMiddleware(history);
-const middlewares = [router];
+const middlewares = [routerMiddlewareCreator()];
 
 const store = createStore(reducer, compose(
   applyMiddleware(...middlewares),
@@ -13,7 +12,6 @@ const store = createStore(reducer, compose(
 
 // create inject for your store.
 export const {inject, connect} = injectCreator(store);
-
-window.store = store;
+export const router = routerCreator(store);
 
 export default store;
