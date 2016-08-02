@@ -9,7 +9,7 @@ import h from 'snabbdom/h';
 import store, {inject} from './store.js'
 
 import Header from './components/Header.js';
-import Routes from './components/Routes.js';
+import Routes from './components/Routes/index.js';
 
 const patch = snabbdom.init([ // Init patch function with choosen modules
   classModule, // makes it easy to toggle classes

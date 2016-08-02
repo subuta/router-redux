@@ -1,5 +1,3 @@
-import h from 'snabbdom/h';
-
 import {
   inject
 } from 'example/store.js'
@@ -8,16 +6,20 @@ import {
   getCurrent
 } from '/lib/index.js';
 
+import Top from './Top.js';
+import Bar from './Bar.js';
+import Foo from './Foo.js';
+import NotFound from './NotFound.js';
+
 export default inject(({state}) => {
   const current = getCurrent(state);
-  console.log("current = ", current);
   if (current === '/') {
-    return h('h1', {}, 'top');
-  } else if (current === '/test') {
-    return h('h1', {}, 'test');
+    return Top();
   } else if (current === '/foo') {
-    return h('h1', {}, 'bar');
+    return Foo();
+  } else if (current === '/bar') {
+    return Bar();
   } else {
-    return h('h1', {}, 'not found...');
+    return NotFound();
   }
 });

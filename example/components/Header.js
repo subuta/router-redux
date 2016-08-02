@@ -28,7 +28,7 @@ export default inject(({dispatch}) => {
     {style: headerStyle},
     [
       h('a', {style: linkStyle, attrs: {href: '/'}, on:{click: pushOnClick('/')}}, 'top'),
-      h('a', {style: linkStyle, attrs: {href: '/test'}, on:{click: pushOnClick('/test')}}, 'test'),
-      h('a', {style: linkStyle, attrs: {href: '/foo'}, on:{click: pushOnClick('/foo')}}, 'foo')
+      h('a', {style: linkStyle, attrs: {href: '/foo'}, on:{click: pushOnClick('/foo')}}, 'foo'),
+      h('a', {style: linkStyle, attrs: {href: '/bar'}, on:{click: pushOnClick('/bar')}}, 'bar')
     ]);
 });

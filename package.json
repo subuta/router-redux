@@ -1,6 +1,6 @@
 {
   "jspm": {
-    "main": "redux-router.js",
+    "name": "router-redux",
     "dependencies": {
       "babel": "npm:babel-core@^6.11.4",
       "redux": "npm:redux@^3.5.2",
@@ -71,31 +71,7 @@
   "name": "router-redux",
   "description": "transform route change as redux action.",
   "version": "0.9.0",
-  "main": "jspm.config.js",
-  "scripts": {
-    "test": "./node_modules/karma/bin/karma start",
-    "bundle": "jspm bundle example/app.js -wid",
-    "unbundle": "jspm unbundle example/app.js",
-    "serve": "caddy & npm run bundle",
-    "build-dev": "jspm build lib/index.js dist/router-redux.js --format umd",
-    "build": "jspm build lib/index.js dist/router-redux.js --format umd --skip-source-maps --minify",
-    "prepublish": "npm run build"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/subuta/router-redux.git"
-  },
-  "keywords": [
-    "redux",
-    "router",
-    "page",
-    "route"
-  ],
-  "author": "subuta <shunta.3110@gmail.com> (https://github.com/subuta)",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/subuta/router-redux/issues"
-  },
+  "dependencies": {},
   "devDependencies": {
     "babel-core": "^6.10.4",
     "babel-plugin-transform-object-rest-spread": "^6.8.0",
@@ -107,6 +83,42 @@
     "mocha": "^2.5.3",
     "sinon": "^1.17.4",
     "sinon-chai": "^2.8.0"
+  },
+  "jspmPackage": true,
+  "files": [
+    "package.json",
+    "README.md",
+    "README-ja.md",
+    "dist",
+    "lib"
+  ],
+  "browser": "dist/router-redux.js",
+  "main": "dist/router-redux.js",
+  "format": "amd",
+  "scripts": {
+    "test": "./node_modules/karma/bin/karma start",
+    "bundle": "jspm bundle example/app.js -wid",
+    "unbundle": "jspm unbundle example/app.js",
+    "serve": "caddy & npm run bundle",
+    "build-dev": "jspm build lib/index.js dist/router-redux.js --format umd",
+    "build": "jspm build lib/index.js dist/router-redux.js --format umd --skip-source-maps --minify",
+    "prepublish": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/subuta/router-redux.git"
+  },
+  "keywords": [
+    "redux",
+    "router",
+    "page",
+    "route"
+  ],
+  "author": "subuta <shunta.3110@gmail.com> (https://github.com/subuta)",
+  "license": "MIT",
+  "registry": "npm",
+  "bugs": {
+    "url": "https://github.com/subuta/router-redux/issues"
   },
   "homepage": "https://github.com/subuta/router-redux#readme"
 }

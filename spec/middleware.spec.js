@@ -5,7 +5,7 @@ import {
   BACK,
   FORWARD
 } from 'lib/actions.js';
-import middlewareCreator from 'lib/middleware.js';
+import routerMiddleware from 'lib/middleware.js';
 import {transformToPath} from 'lib/reducer.js';
 import routerCreator from 'lib/router.js';
 
@@ -40,7 +40,7 @@ describe('middleware', function() {
 
     router = routerCreator(store);
     dispatch = sandbox.spy((action) => action);
-    middleware = middlewareCreator(history)(store)(dispatch);
+    middleware = routerMiddleware(store)(dispatch);
   });
 
   afterEach(function(){
@@ -158,8 +158,32 @@ describe('middleware', function() {
     assert.equal(location.pathname, '/sample');
   });
 
-  it('should not dispatch history action if router\'s onEnter not calls callback.', function(){
+  it('should call router\'s onEnter hook on push even if omit cb argument', function(){
     const onEnter = sinon.spy((state) => {
+      assert.deepEqual(state, {
+        routing: {
+          current: transformToPath(location)
+        }
+      });
+    });
+    router.onEnter('/sample', onEnter);
+
+    middleware({
+      type: PUSH,
+      payload: '/sample'
+    });
+
+    assert.equal(dispatch.called, true);
+    assert.equal(dispatch.calledWith({
+      type: PUSH,
+      payload: location
+    }), true);
+    assert.equal(onEnter.called, true);
+    assert.equal(location.pathname, '/sample');
+  });
+
+  it('should not dispatch history action if router\'s onEnter not calls callback.', function(){
+    const onEnter = sinon.spy((state, cb) => {
       assert.deepEqual(state, {
         routing: {
           current: transformToPath(location)
