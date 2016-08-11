@@ -3,6 +3,7 @@ import routerCreator, {
   routerReducer,
   getCurrent,
   getLast,
+  getIsInitalRouteResolved,
   push,
   replace,
   go,
@@ -16,6 +17,7 @@ describe('index', function() {
     assert.equal(typeof routerReducer === 'function', true);
     assert.equal(typeof getCurrent === 'function', true);
     assert.equal(typeof getLast === 'function', true);
+    assert.equal(typeof getIsInitalRouteResolved === 'function', true);
     assert.equal(typeof push === 'function', true);
     assert.equal(typeof replace === 'function', true);
     assert.equal(typeof go === 'function', true);

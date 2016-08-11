@@ -1,11 +1,13 @@
 import {
-  ROUTE_CHANGE
+  ROUTE_CHANGE,
+  INITIAL_ROUTE_RESOLVED
 } from 'lib/actions.js';
 import reducer, {
   transformToPath,
   hasRouting,
   getCurrent,
-  getLast
+  getLast,
+  getIsInitalRouteResolved
 } from 'lib/reducer.js';
 
 describe('reducer', function() {
@@ -41,6 +43,21 @@ describe('reducer', function() {
       last: '/'
     });
   });
+
+  it('should apply initialRouteResolved to state', function(){
+    assert.deepEqual(reducer({
+      current: '/',
+      last: null,
+      isInitialRouteResolved: false
+    }, {
+      type: INITIAL_ROUTE_RESOLVED,
+      payload: location
+    }), {
+      current: '/',
+      last: null,
+      isInitialRouteResolved: true
+    });
+  });
 });
 
 describe('transformToPath', function() {
@@ -74,5 +91,9 @@ describe('selectors', function() {
 
   it('should return last in the state', function(){
     assert.equal(getLast({routing: {last: 'sample'}}), 'sample');
+  });
+
+  it('should return isInitialRouteResolved in the state', function(){
+    assert.equal(getIsInitalRouteResolved({routing: {isInitialRouteResolved: true}}), true);
   });
 });

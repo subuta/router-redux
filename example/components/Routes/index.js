@@ -3,7 +3,8 @@ import {
 } from 'example/store.js'
 
 import {
-  getCurrent
+  getCurrent,
+  getIsInitalRouteResolved
 } from 'lib/index.js';
 
 import Top from './Top.js';

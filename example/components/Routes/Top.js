@@ -1,6 +1,14 @@
 import h from 'snabbdom/h';
 import {router} from 'example/store.js';
 
+import {
+  inject
+} from 'example/store.js'
+
+import {
+  getIsInitalRouteResolved
+} from 'lib/index.js';
+
 router.onEnter('/', (state, cb) => {
   console.log('loading ...');
   setTimeout(() => {
@@ -13,6 +21,10 @@ router.onLeave('/', (state) => {
   console.log('leave from top');
 });
 
-export default () => {
+export default inject(({state}) => {
+  const isInitialRouteResolved = getIsInitalRouteResolved(state);
+  if (!isInitialRouteResolved) {
+    return h('h1', {}, 'loading...');
+  }
   return h('h1', {}, 'top');
-};
+});
