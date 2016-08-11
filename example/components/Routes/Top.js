@@ -9,11 +9,12 @@ import {
   getIsInitalRouteResolved
 } from 'lib/index.js';
 
-router.onEnter('/', (state, cb) => {
+router.onEnter('/', ({state}, cb) => {
   console.log('loading ...');
   setTimeout(() => {
     console.log('enter in top');
-    cb();
+    cb(new Error('some error in top'));
+    // cb();
   }, 3000);
 });
 

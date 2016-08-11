@@ -1,5 +1,6 @@
 import {
   ROUTE_CHANGE,
+  ROUTE_ERROR,
   INITIAL_ROUTE_RESOLVED
 } from 'lib/actions.js';
 import reducer, {
@@ -7,6 +8,7 @@ import reducer, {
   hasRouting,
   getCurrent,
   getLast,
+  getRouteError,
   getIsInitalRouteResolved
 } from 'lib/reducer.js';
 
@@ -44,14 +46,28 @@ describe('reducer', function() {
     });
   });
 
+  it('should apply routeError to state', function(){
+    assert.deepEqual(reducer({
+      current: '/',
+      last: null,
+      routeError: false
+    }, {
+      type: ROUTE_ERROR,
+      payload: true
+    }), {
+      current: '/',
+      last: null,
+      routeError: true
+    });
+  });
+
   it('should apply initialRouteResolved to state', function(){
     assert.deepEqual(reducer({
       current: '/',
       last: null,
       isInitialRouteResolved: false
     }, {
-      type: INITIAL_ROUTE_RESOLVED,
-      payload: location
+      type: INITIAL_ROUTE_RESOLVED
     }), {
       current: '/',
       last: null,
@@ -85,15 +101,19 @@ describe('hasRouting', function() {
 });
 
 describe('selectors', function() {
-  it('should return current in the state', function(){
+  it('should return current from the state', function(){
     assert.equal(getCurrent({routing: {current: 'sample'}}), 'sample');
   });
 
-  it('should return last in the state', function(){
+  it('should return last from the state', function(){
     assert.equal(getLast({routing: {last: 'sample'}}), 'sample');
   });
 
-  it('should return isInitialRouteResolved in the state', function(){
+  it('should return routeError from the state', function(){
+    assert.equal(getRouteError({routing: {routeError: true}}), true);
+  });
+
+  it('should return isInitialRouteResolved from the state', function(){
     assert.equal(getIsInitalRouteResolved({routing: {isInitialRouteResolved: true}}), true);
   });
 });

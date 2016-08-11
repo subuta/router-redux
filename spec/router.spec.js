@@ -1,5 +1,6 @@
 import {
   ROUTE_CHANGE,
+  ROUTE_ERROR,
   INITIAL_ROUTE_RESOLVED
 } from 'lib/actions.js';
 
@@ -40,7 +41,7 @@ describe('routerCreator', function() {
   });
 
   it('should register popState on creation', function(){
-    const router = routerCreator(store);
+    routerCreator(store);
     assert.equal(window.addEventListener.called, true);
     assert.equal(window.addEventListener.calledWith('popstate'), true);
   });
@@ -53,7 +54,7 @@ describe('routerCreator', function() {
   });
 
   it('should dispatch routeChange action on popState', function(){
-    const router = routerCreator(store);
+    routerCreator(store);
     assert.equal(store.dispatch.called, false);
 
     const popStateEvent = new PopStateEvent('popstate');
@@ -91,7 +92,7 @@ describe('routerCreator', function() {
 
   it('onEnter should add routes and call route once if currentPath matched', function(){
     const router = routerCreator(store);
-    const onEnter = sinon.spy((state, cb) => {
+    const onEnter = sinon.spy(({state}, cb) => {
       assert.deepEqual(state, {
         routing: {
           current: transformToPath(location)
@@ -114,15 +115,67 @@ describe('routerCreator', function() {
 
     assert.equal(store.dispatch.called, true);
     assert.equal(store.dispatch.calledWith({
-      type: INITIAL_ROUTE_RESOLVED,
-      payload: location
+      type: INITIAL_ROUTE_RESOLVED
+    }), true);
+    assert.equal(onEnter.called, true);
+  });
+
+  it('should dispatch routeError action if callback called with falsy argument', function(){
+    const router = routerCreator(store);
+    const onEnter = sinon.spy(({state}, cb) => {
+      assert.deepEqual(state, {
+        routing: {
+          current: transformToPath(location)
+        }
+      });
+      cb(false);
+    });
+
+    assert.equal(store.dispatch.called, false);
+
+    router.onEnter('/', onEnter);
+
+    assert.equal(store.dispatch.calledTwice, true);
+    assert.equal(store.dispatch.calledWith({
+      type: ROUTE_ERROR,
+      payload: true
+    }), true);
+    assert.equal(store.dispatch.calledWith({
+      type: INITIAL_ROUTE_RESOLVED
+    }), true);
+    assert.equal(onEnter.called, true);
+  });
+
+  it('should dispatch routeError action if callback called with Error object', function(){
+    const router = routerCreator(store);
+    const err = new Error('dummy error');
+    const onEnter = sinon.spy(({state}, cb) => {
+      assert.deepEqual(state, {
+        routing: {
+          current: transformToPath(location)
+        }
+      });
+      cb(err);
+    });
+
+    assert.equal(store.dispatch.called, false);
+
+    router.onEnter('/', onEnter);
+
+    assert.equal(store.dispatch.calledTwice, true);
+    assert.equal(store.dispatch.calledWith({
+      type: ROUTE_ERROR,
+      payload: err
+    }), true);
+    assert.equal(store.dispatch.calledWith({
+      type: INITIAL_ROUTE_RESOLVED
     }), true);
     assert.equal(onEnter.called, true);
   });
 
   it('should not dispatch initialRouteResolved action if router\'s onEnter argument omitted.', function(){
     const router = routerCreator(store);
-    const onEnter = sinon.spy((state) => {
+    const onEnter = sinon.spy(({state}) => {
       assert.deepEqual(state, {
         routing: {
           current: transformToPath(location)
@@ -137,7 +190,7 @@ describe('routerCreator', function() {
 
   it('should not dispatch initialRouteResolved action if router\'s onEnter not calls callback.', function(){
     const router = routerCreator(store);
-    const onEnter = sinon.spy((state, cb) => {
+    const onEnter = sinon.spy(({state}, cb) => {
       assert.deepEqual(state, {
         routing: {
           current: transformToPath(location)

@@ -1,5 +1,7 @@
 import {
   routeChange,
+  routeError,
+  initialRouteResolved,
   push,
   replace,
   go,
@@ -17,6 +19,27 @@ describe('actions', function() {
     assert.deepEqual(routeChange(location), {
       type: '@@router-redux/ROUTE_CHANGE',
       payload: location
+    });
+  });
+
+  it('should create routeError action', function(){
+    const err = new Error('dummy error');
+    assert.deepEqual(routeError(err), {
+      type: '@@router-redux/ROUTE_ERROR',
+      payload: err
+    });
+  });
+
+  it('should create routeError action with falsy value', function(){
+    assert.deepEqual(routeError(false), {
+      type: '@@router-redux/ROUTE_ERROR',
+      payload: true
+    });
+  });
+
+  it('should create initialRouteResolved action', function(){
+    assert.deepEqual(initialRouteResolved(), {
+      type: '@@router-redux/INITIAL_ROUTE_RESOLVED'
     });
   });
 
