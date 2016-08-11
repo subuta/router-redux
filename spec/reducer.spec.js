@@ -1,12 +1,12 @@
 import {
   ROUTE_CHANGE
-} from '/lib/actions.js';
+} from 'lib/actions.js';
 import reducer, {
   transformToPath,
   hasRouting,
   getCurrent,
   getLast
-} from '/lib/reducer.js';
+} from 'lib/reducer.js';
 
 describe('reducer', function() {
   beforeEach(function(){

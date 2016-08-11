@@ -2,15 +2,15 @@
   "jspm": {
     "name": "router-redux",
     "dependencies": {
-      "babel": "npm:babel-core@^6.11.4",
-      "redux": "npm:redux@^3.5.2",
-      "redux-virtual-dom": "npm:redux-virtual-dom@^0.9.1",
-      "snabbdom": "npm:snabbdom@^0.5.1"
+      "babel": "babel-core@^6.11.4",
+      "redux": "^3.5.2",
+      "redux-virtual-dom": "^0.9.1",
+      "snabbdom": "^0.5.1"
     },
     "devDependencies": {
-      "babel-runtime": "npm:babel-runtime@^5.8.24",
-      "core-js": "npm:core-js@^1.1.4",
-      "plugin-babel": "npm:systemjs-plugin-babel@^0.0.12"
+      "babel-runtime": "^5.8.24",
+      "core-js": "^1.1.4",
+      "plugin-babel": "systemjs-plugin-babel@^0.0.12"
     },
     "peerDependencies": {
       "assert": "github:jspm/nodelibs-assert@^0.2.0-alpha",

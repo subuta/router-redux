@@ -1,10 +1,10 @@
 import {
   ROUTE_CHANGE
-} from '/lib/actions.js';
+} from 'lib/actions.js';
 
 import routerCreator, {
   getRoutes
-} from '/lib/router.js';
+} from 'lib/router.js';
 
 describe('routerCreator', function() {
 

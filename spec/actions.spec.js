@@ -6,7 +6,7 @@ import {
   back,
   forward,
   isHistoryAction
-} from '/lib/actions.js';
+} from 'lib/actions.js';
 
 describe('actions', function() {
   beforeEach(function(){

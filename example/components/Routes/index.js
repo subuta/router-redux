@@ -4,7 +4,7 @@ import {
 
 import {
   getCurrent
-} from '/lib/index.js';
+} from 'lib/index.js';
 
 import Top from './Top.js';
 import Bar from './Bar.js';

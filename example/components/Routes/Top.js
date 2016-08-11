@@ -1,5 +1,5 @@
 import h from 'snabbdom/h';
-import {router} from '/example/store.js';
+import {router} from 'example/store.js';
 
 router.onEnter('/', (state, cb) => {
   console.log('loading ...');
