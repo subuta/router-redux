@@ -17,7 +17,7 @@ export default inject(({state}) => {
   const current = getCurrent(state);
   const routeError = getRouteError(state);
 
-  if (routeError) {
+  if (current === '/error') {
     return Error({error: routeError.message});
   } else if (current === '/') {
     return Top();

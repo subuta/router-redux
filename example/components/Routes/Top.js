@@ -6,8 +6,13 @@ import {
 } from 'example/store.js'
 
 import {
+  push,
   getIsInitalRouteResolved
 } from 'lib/index.js';
+
+router.onError(({state, dispatch}) => {
+  dispatch(push('/error'));
+});
 
 router.onEnter('/', ({state}, cb) => {
   console.log('loading ...');

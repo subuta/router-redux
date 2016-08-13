@@ -146,6 +146,64 @@ describe('routerCreator', function() {
     assert.equal(onEnter.called, true);
   });
 
+  it('should call onError handler on routeError', function(){
+    const router = routerCreator(store);
+    const onError = sinon.spy(({state}) => {
+      assert.deepEqual(state, {
+        routing: {
+          current: transformToPath(location)
+        }
+      });
+    });
+
+    const onEnter = sinon.spy(({state}, cb) => {
+      cb(false);
+    });
+
+    assert.equal(store.dispatch.called, false);
+
+    router.onError(onError);
+    router.onEnter('/', onEnter);
+
+    assert.equal(store.dispatch.calledTwice, true);
+    assert.equal(store.dispatch.calledWith({
+      type: ROUTE_ERROR,
+      payload: true
+    }), true);
+    assert.equal(store.dispatch.calledWith({
+      type: INITIAL_ROUTE_RESOLVED
+    }), true);
+    assert.equal(onEnter.called, true);
+    assert.equal(onError.called, true);
+  });
+
+  it('should put warn message on routeError if no onError handler exists.', function(){
+    const wrappedConsole = sandbox.spy(console, 'warn');
+    const router = routerCreator(store);
+    const onEnter = sinon.spy(({state}, cb) => {
+      cb(false);
+    });
+
+    assert.equal(store.dispatch.called, false);
+
+    router.onEnter('/', onEnter);
+
+    assert.equal(store.dispatch.calledTwice, true);
+    assert.equal(store.dispatch.calledWith({
+      type: ROUTE_ERROR,
+      payload: true
+    }), true);
+    assert.equal(store.dispatch.calledWith({
+      type: INITIAL_ROUTE_RESOLVED
+    }), true);
+    assert.equal(onEnter.called, true);
+    assert.equal(wrappedConsole.called, true);
+    // should put warn message to console.
+    assert.equal(wrappedConsole.calledWith(
+      'You should register router.onError to handle this routing error. data =', false
+    ), true);
+  });
+
   it('should dispatch routeError action if callback called with Error object', function(){
     const router = routerCreator(store);
     const err = new Error('dummy error');

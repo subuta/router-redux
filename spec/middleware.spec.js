@@ -3,7 +3,8 @@ import {
   REPLACE,
   GO,
   BACK,
-  FORWARD
+  FORWARD,
+  ROUTE_ERROR
 } from 'lib/actions.js';
 import routerMiddleware from 'lib/middleware.js';
 import {transformToPath} from 'lib/reducer.js';
@@ -39,7 +40,7 @@ describe('middleware', function() {
     history.forward = sandbox.spy(history, 'forward');
 
     router = routerCreator(store);
-    dispatch = sandbox.spy((action) => action);
+    dispatch = store.dispatch;
     middleware = routerMiddleware(store)(dispatch);
   });
 
@@ -134,7 +135,7 @@ describe('middleware', function() {
   });
 
   it('should call router\'s onEnter hook on push', function(){
-    const onEnter = sinon.spy((state, cb) => {
+    const onEnter = sinon.spy(({state}, cb) => {
       assert.deepEqual(state, {
         routing: {
           current: transformToPath(location)
@@ -159,7 +160,7 @@ describe('middleware', function() {
   });
 
   it('should call router\'s onEnter hook on push even if omit cb argument', function(){
-    const onEnter = sinon.spy((state) => {
+    const onEnter = sinon.spy(({state}) => {
       assert.deepEqual(state, {
         routing: {
           current: transformToPath(location)
@@ -183,7 +184,7 @@ describe('middleware', function() {
   });
 
   it('should not dispatch history action if router\'s onEnter not calls callback.', function(){
-    const onEnter = sinon.spy((state, cb) => {
+    const onEnter = sinon.spy(({state}, cb) => {
       assert.deepEqual(state, {
         routing: {
           current: transformToPath(location)
@@ -199,6 +200,41 @@ describe('middleware', function() {
 
     assert.equal(dispatch.called, false);
     assert.equal(onEnter.called, true);
+    assert.equal(location.pathname, '/');
+  });
+
+  it('should not dispatch history action if router\'s onEnter calls callback with falsy value.', function(){
+    const onEnter = sinon.spy(({state}, cb) => {
+      assert.deepEqual(state, {
+        routing: {
+          current: transformToPath(location)
+        }
+      });
+      cb(false);
+    });
+    const onError = sinon.spy(({state}) => {
+      assert.deepEqual(state, {
+        routing: {
+          current: transformToPath(location)
+        }
+      });
+    });
+
+    router.onError(onError);
+    router.onEnter('/sample', onEnter);
+
+    middleware({
+      type: PUSH,
+      payload: '/sample'
+    });
+
+    assert.equal(dispatch.calledOnce, true);
+    assert.equal(dispatch.calledWith({
+      type: ROUTE_ERROR,
+      payload: true
+    }), true);
+    assert.equal(onEnter.called, true);
+    assert.equal(onError.called, true);
     assert.equal(location.pathname, '/');
   });
 
