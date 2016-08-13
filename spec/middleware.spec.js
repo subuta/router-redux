@@ -4,7 +4,8 @@ import {
   GO,
   BACK,
   FORWARD,
-  ROUTE_ERROR
+  ROUTE_ERROR,
+  INITIAL_ROUTE_RESOLVED
 } from 'lib/actions.js';
 import routerMiddleware from 'lib/middleware.js';
 import {transformToPath} from 'lib/reducer.js';
@@ -198,7 +199,10 @@ describe('middleware', function() {
       payload: '/sample'
     });
 
-    assert.equal(dispatch.called, false);
+    assert.equal(dispatch.calledOnce, true);
+    assert.equal(dispatch.calledWith({
+      type: INITIAL_ROUTE_RESOLVED
+    }), true);
     assert.equal(onEnter.called, true);
     assert.equal(location.pathname, '/');
   });
@@ -228,7 +232,10 @@ describe('middleware', function() {
       payload: '/sample'
     });
 
-    assert.equal(dispatch.calledOnce, true);
+    assert.equal(dispatch.calledTwice, true);
+    assert.equal(dispatch.calledWith({
+      type: INITIAL_ROUTE_RESOLVED
+    }), true);
     assert.equal(dispatch.calledWith({
       type: ROUTE_ERROR,
       payload: true

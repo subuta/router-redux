@@ -20,7 +20,7 @@ router.onEnter('/', ({state}, cb) => {
     console.log('enter in top');
     cb(new Error('some error in top'));
     // cb();
-  }, 3000);
+  }, 1000);
 });
 
 router.onLeave('/', (state) => {
