@@ -1,5 +1,6 @@
-import routerCreator, {
-  routerMiddlewareCreator,
+import routerCreator from 'lib/index.js';
+import {
+  routerMiddleware,
   routerReducer,
   getCurrent,
   getLast,
@@ -15,6 +16,7 @@ import routerCreator, {
 describe('index', function() {
   it('should export things correctly', function(){
     assert.equal(typeof routerCreator === 'function', true);
+    assert.equal(typeof routerMiddleware === 'function', true);
     assert.equal(typeof routerReducer === 'function', true);
     assert.equal(typeof getCurrent === 'function', true);
     assert.equal(typeof getLast === 'function', true);

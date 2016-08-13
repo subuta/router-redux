@@ -8,9 +8,26 @@ SystemJS.config({
   },
   devConfig: {
     "map": {
-      "core-js": "npm:core-js@1.2.7",
       "plugin-babel": "npm:systemjs-plugin-babel@0.0.12",
-      "babel-runtime": "npm:babel-runtime@5.8.38"
+      "redux": "npm:redux@3.5.2",
+      "redux-virtual-dom": "npm:redux-virtual-dom@0.9.1",
+      "snabbdom": "npm:snabbdom@0.5.1"
+    },
+    "packages": {
+      "npm:redux-virtual-dom@0.9.1": {
+        "map": {
+          "babel": "npm:babel-core@6.11.4",
+          "deep-equal": "npm:deep-equal@1.0.1"
+        }
+      },
+      "npm:redux@3.5.2": {
+        "map": {
+          "lodash": "npm:lodash@4.14.1",
+          "loose-envify": "npm:loose-envify@1.2.0",
+          "lodash-es": "npm:lodash-es@4.14.1",
+          "symbol-observable": "npm:symbol-observable@0.2.4"
+        }
+      }
     }
   },
   transpiler: "plugin-babel",
@@ -23,6 +40,10 @@ SystemJS.config({
         }
       }
     }
+  },
+  map: {
+    "babel-runtime": "npm:babel-runtime@5.8.38",
+    "core-js": "npm:core-js@1.2.7"
   }
 });
 
@@ -43,20 +64,11 @@ SystemJS.config({
     "module": "github:jspm/nodelibs-module@0.2.0-alpha",
     "path": "github:jspm/nodelibs-path@0.2.0-alpha",
     "process": "github:jspm/nodelibs-process@0.2.0-alpha",
-    "redux": "npm:redux@3.5.2",
-    "redux-virtual-dom": "npm:redux-virtual-dom@0.9.1",
-    "snabbdom": "npm:snabbdom@0.5.1",
     "stream": "github:jspm/nodelibs-stream@0.2.0-alpha",
     "url": "github:jspm/nodelibs-url@0.2.0-alpha",
     "util": "github:jspm/nodelibs-util@0.2.0-alpha"
   },
   packages: {
-    "npm:redux-virtual-dom@0.9.1": {
-      "map": {
-        "babel": "npm:babel-core@6.11.4",
-        "deep-equal": "npm:deep-equal@1.0.1"
-      }
-    },
     "npm:babel-core@6.11.4": {
       "map": {
         "babel-runtime": "npm:babel-runtime@6.11.6",
@@ -305,14 +317,6 @@ SystemJS.config({
     "npm:is-finite@1.0.1": {
       "map": {
         "number-is-nan": "npm:number-is-nan@1.0.0"
-      }
-    },
-    "npm:redux@3.5.2": {
-      "map": {
-        "lodash": "npm:lodash@4.14.1",
-        "loose-envify": "npm:loose-envify@1.2.0",
-        "lodash-es": "npm:lodash-es@4.14.1",
-        "symbol-observable": "npm:symbol-observable@0.2.4"
       }
     }
   }
