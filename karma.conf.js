@@ -13,10 +13,6 @@ module.exports = function(config) {
       'chai'
     ],
 
-    files: [
-      '/node_modules/babel-polyfill/dist/polyfill.js'
-    ],
-
     client: {
       chai: {
         includeStack: true
