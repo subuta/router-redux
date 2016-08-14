@@ -48,10 +48,10 @@ module.exports = function(config) {
 
     jspm: {
       loadFiles: [
+        '/node_modules/babel-polyfill/dist/polyfill.js',
         'spec/**/*.spec.js'
       ],
       serveFiles: [
-        '/node_modules/babel-polyfill/dist/polyfill.js',
         'lib/**/*.js'
       ],
       config: "jspm.config.js",
