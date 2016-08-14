@@ -18,8 +18,8 @@ router.onEnter('/', ({state}, cb) => {
   console.log('loading ...');
   setTimeout(() => {
     console.log('enter in top');
-    // cb(new Error('some error in top'));
-    cb();
+    cb(new Error('some error in top'));
+    // cb();
   }, 1000);
 });
 
