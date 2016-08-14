@@ -13,9 +13,9 @@ module.exports = function(config) {
       'chai'
     ],
 
-    files: {
+    files: [
       '/node_modules/babel-polyfill/dist/polyfill.js'
-    },
+    ],
 
     client: {
       chai: {
