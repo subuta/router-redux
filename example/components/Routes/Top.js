@@ -23,7 +23,7 @@ router.onEnter('/', ({state}, cb) => {
   }, 1000);
 });
 
-router.onLeave('/', (state) => {
+router.onLeave('/', ({state}) => {
   console.log('leave from top');
 });
 
