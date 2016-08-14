@@ -14,16 +14,16 @@ import NotFound from './NotFound.js';
 import Error from './Error.js';
 
 export default inject(({state}) => {
-  const current = getCurrent(state);
+  const currentPath = getCurrent(state).path;
   const routeError = getRouteError(state);
 
-  if (current === '/error') {
+  if (currentPath === '/error') {
     return Error({error: routeError.message});
-  } else if (current === '/') {
+  } else if (currentPath === '/') {
     return Top();
-  } else if (current === '/foo') {
+  } else if (currentPath === '/foo') {
     return Foo();
-  } else if (current === '/bar') {
+  } else if (currentPath === '/bar') {
     return Bar();
   } else {
     return NotFound();

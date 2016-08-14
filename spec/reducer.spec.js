@@ -26,7 +26,7 @@ describe('reducer', function() {
     };
 
     assert.deepEqual(reducer(initialState, {}), {
-      current: '/',
+      current: {path: '/', query: ''},
       last: null
     });
   });
@@ -35,14 +35,23 @@ describe('reducer', function() {
     history.pushState(null, null, '/sample');
 
     assert.deepEqual(reducer({
-      current: '/',
+      current: {
+        path: '/',
+        query: ''
+      },
       last: null
     }, {
       type: ROUTE_CHANGE,
       payload: location
     }), {
-      current: '/sample',
-      last: '/'
+      current: {
+        path: '/sample',
+        query: ''
+      },
+      last: {
+        path: '/',
+        query: ''
+      }
     });
   });
 
@@ -82,7 +91,12 @@ describe('transformToPath', function() {
   });
 
   it('should transform location to string', function(){
-    assert.equal(transformToPath(location), '/');
+    assert.deepEqual(transformToPath(location), {path: '/', query: ''});
+  });
+
+  it('should transform location to string with query param', function(){
+    history.pushState(null, null, '/sample?hoge=true&fuga=true');
+    assert.deepEqual(transformToPath(location), {path: '/sample', query: 'hoge=true&fuga=true'});
   });
 });
 
