@@ -39,7 +39,30 @@ describe('match', function() {
     assert.equal(!!match('/', '/'), true);
   });
 
+  it('should match even if path contains query string', function(){
+    assert.equal(!!match('/', '/?sample=true'), true);
+  });
+
   it('should match path syntax comparison', function(){
-    assert.equal(!!match('/user/:id', '/user/1'), true);
+    assert.deepEqual(match('/user/:id', '/user/1'), { id: 1 });
+  });
+
+  it('should match path syntax comparison with string param', function(){
+    assert.deepEqual(match('/user/:id', '/user/me'), { id: 'me' });
+  });
+
+  it('should return false when not matched', function(){
+    assert.equal(!!match('/user/:id', '/user'), false);
+  });
+
+  it('should return false when not matched exactly', function(){
+    assert.equal(!!match('/user/:id', '/user/'), false);
+  });
+
+  it('should match multiple path syntax comparison', function(){
+    assert.deepEqual(match('/user/:id/comment/:commentId', '/user/1/comment/3'), {
+      id: 1,
+      commentId: 3
+    });
   });
 });

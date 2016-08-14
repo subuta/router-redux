@@ -7,7 +7,8 @@ import {
   go,
   back,
   forward,
-  isHistoryAction
+  isHistoryAction,
+  transformToPath
 } from 'lib/actions.js';
 
 describe('actions', function() {
@@ -18,7 +19,7 @@ describe('actions', function() {
   it('should create routeChange action', function(){
     assert.deepEqual(routeChange(location), {
       type: '@@router-redux/ROUTE_CHANGE',
-      payload: location
+      payload: transformToPath(location)
     });
   });
 
@@ -88,5 +89,20 @@ describe('isHistoryAction', function() {
 
   it('should return false with null', function(){
     assert.equal(isHistoryAction(null), false);
+  });
+});
+
+describe('transformToPath', function() {
+  beforeEach(function(){
+    history.pushState(null, null, '/');
+  });
+
+  it('should transform location to string', function(){
+    assert.deepEqual(transformToPath(location), {path: '/', query: ''});
+  });
+
+  it('should transform location to string with query param', function(){
+    history.pushState(null, null, '/sample?hoge=true&fuga=true');
+    assert.deepEqual(transformToPath(location), {path: '/sample', query: 'hoge=true&fuga=true'});
   });
 });

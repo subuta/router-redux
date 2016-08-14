@@ -1,10 +1,11 @@
 import {
   ROUTE_CHANGE,
   ROUTE_ERROR,
-  INITIAL_ROUTE_RESOLVED
+  INITIAL_ROUTE_RESOLVED,
+  PUSH,
+  transformToPath
 } from 'lib/actions.js';
 import reducer, {
-  transformToPath,
   hasRouting,
   getCurrent,
   getLast,
@@ -42,7 +43,31 @@ describe('reducer', function() {
       last: null
     }, {
       type: ROUTE_CHANGE,
-      payload: location
+      payload: transformToPath(location)
+    }), {
+      current: {
+        path: '/sample',
+        query: ''
+      },
+      last: {
+        path: '/',
+        query: ''
+      }
+    });
+  });
+
+  it('should apply push to state', function(){
+    history.pushState(null, null, '/sample');
+
+    assert.deepEqual(reducer({
+      current: {
+        path: '/',
+        query: ''
+      },
+      last: null
+    }, {
+      type: PUSH,
+      payload: transformToPath(location)
     }), {
       current: {
         path: '/sample',
@@ -85,20 +110,6 @@ describe('reducer', function() {
   });
 });
 
-describe('transformToPath', function() {
-  beforeEach(function(){
-    history.pushState(null, null, '/');
-  });
-
-  it('should transform location to string', function(){
-    assert.deepEqual(transformToPath(location), {path: '/', query: ''});
-  });
-
-  it('should transform location to string with query param', function(){
-    history.pushState(null, null, '/sample?hoge=true&fuga=true');
-    assert.deepEqual(transformToPath(location), {path: '/sample', query: 'hoge=true&fuga=true'});
-  });
-});
 
 describe('hasRouting', function() {
   beforeEach(function(){

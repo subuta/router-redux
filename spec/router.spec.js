@@ -1,14 +1,14 @@
 import {
   ROUTE_CHANGE,
   ROUTE_ERROR,
-  INITIAL_ROUTE_RESOLVED
+  INITIAL_ROUTE_RESOLVED,
+  transformToPath
 } from 'lib/actions.js';
 
 import routerCreator, {
-  getRoutes
+  getRoutes,
+  matchRoute
 } from 'lib/router.js';
-
-import {transformToPath} from 'lib/reducer.js';
 
 describe('routerCreator', function() {
 
@@ -63,7 +63,7 @@ describe('routerCreator', function() {
     assert.equal(store.dispatch.called, true);
     assert.equal(store.dispatch.calledWith({
       type: ROUTE_CHANGE,
-      payload: location
+      payload: transformToPath(location)
     }), true);
   });
 
@@ -88,6 +88,16 @@ describe('routerCreator', function() {
         onEnter
       }
     });
+  });
+
+  it('onEnter should match route', function(){
+    history.pushState(null, null, '/user/1');
+
+    const router = routerCreator(store);
+    const onEnter = sinon.spy();
+    router.onEnter('/user/:id', onEnter);
+
+    assert.equal(onEnter.called, true);
   });
 
   it('onEnter should add routes and call route once if currentPath matched', function(){
@@ -274,16 +284,75 @@ describe('routerCreator', function() {
 });
 
 describe('getRoutes', function() {
+  let sandbox;
   let router;
   beforeEach(function(){
+    sandbox = sinon.sandbox.create();
     const store = {
-      getState: sinon.spy(() => {}),
-      dispatch: sinon.spy(() => {})
+      getState: sandbox.spy(() => {
+        return {
+          routing: {
+            current: transformToPath(location)
+          }
+        }
+      }),
+      dispatch: sandbox.spy(() => {})
     };
     router = routerCreator(store);
   });
 
-  it('should return routes', function(){
+  afterEach(function(){
+    sandbox.restore();
+  });
+
+  it('should return empty routes', function(){
     assert.deepEqual(getRoutes(), {});
+  });
+
+  it('should return routes', function(){
+    const onEnter = sinon.spy();
+    router.onEnter('/', onEnter);
+    assert.deepEqual(getRoutes(), {
+      '/': {
+        onEnter
+      }
+    });
+  });
+});
+
+describe('matchRoute', function() {
+  let sandbox;
+  let router;
+  beforeEach(function(){
+    sandbox = sinon.sandbox.create();
+    const store = {
+      getState: sandbox.spy(() => {
+        return {
+          routing: {
+            current: transformToPath(location)
+          }
+        }
+      }),
+      dispatch: sandbox.spy(() => {})
+    };
+    router = routerCreator(store);
+  });
+
+  afterEach(function(){
+    sandbox.restore();
+  });
+
+  it('should return matched route', function(){
+    const onEnter = sinon.spy();
+    router.onEnter('/user/:id', onEnter);
+    assert.deepEqual(matchRoute('/user/1'), {
+      onEnter
+    });
+  });
+
+  it('should return null if not found', function(){
+    const onEnter = sinon.spy();
+    router.onEnter('/user/:id', onEnter);
+    assert.deepEqual(matchRoute('/user'), null);
   });
 });
