@@ -51,6 +51,7 @@ module.exports = function(config) {
         'spec/**/*.spec.js'
       ],
       serveFiles: [
+        '/node_modules/babel-polyfill/dist/polyfill.js',
         'lib/**/*.js'
       ],
       config: "jspm.config.js",

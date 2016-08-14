@@ -1,4 +1,4 @@
-# router-redux
+# router-redux [![Build Status](https://travis-ci.org/subuta/router-redux.svg?branch=master)](https://travis-ci.org/subuta/router-redux) [![Coverage Status](https://coveralls.io/repos/github/subuta/router-redux/badge.svg?branch=master)](https://coveralls.io/github/subuta/router-redux?branch=master)
 View framework agnostic router for redux :)
 this is [react-router-redux](https://github.com/reactjs/react-router-redux) for your vdom-based project.
 
@@ -7,6 +7,8 @@ this is [react-router-redux](https://github.com/reactjs/react-router-redux) for 
   - or [snabbdom](https://github.com/paldepind/snabbdom)
 - Adds pushState/popState based client-side routing to your project.
 - Light weight(under 5K) but yet powerful router for Redux. 
+
+[README - 日本語版](README-ja.md)
 
 ## Installation
 ```
@@ -141,6 +143,7 @@ will created by `routerCreator` above. You can register your own handler functio
 (this is useful for Authentication or Load page related data via ajax)
 - if you call `callback` function with falsy value(or Error object). `router-redux` will call `router.onError`
 and cancel navigation. (this is useful for handling un-authorized response or Server error)
+- if you omit `callback` function then your onEnter result will not affect to further navigation(become asynchronous).
   
 #### `router.onLeave(path, handler)`
 - `handler({state, dispatch})`
@@ -152,7 +155,7 @@ and cancel navigation. (this is useful for handling un-authorized response or Se
 - you can get actual routeError using `getRouteError` selector.
 
 ### actions
-- will creates redux action. you need to call store.dispatch with this action/ 
+- will creates redux action. you need to call store.dispatch with this action.
 
 #### `push(path)/replace(path)`
 - create push/replace action with `path`.
@@ -177,7 +180,7 @@ and cancel navigation. (this is useful for handling un-authorized response or Se
 
 #### `getIsInitalRouteResolved(state)`
 - extracts `isInitialRouteResolved` from `state`
-- `isInitialRouteResolved` become `true` when you call initial onEnter handler's `callback`.
+- `isInitialRouteResolved` become `true` after you call initial onEnter handler's `callback`.
 - this is useful for initial page rendering(via browser's url bar navigation).
 
 ## Development
