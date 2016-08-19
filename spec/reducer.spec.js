@@ -1,10 +1,10 @@
 import {
   ROUTE_CHANGE,
   ROUTE_ERROR,
-  INITIAL_ROUTE_RESOLVED
+  INITIAL_ROUTE_RESOLVED,
+  transformLocationToPath
 } from 'lib/actions.js';
 import reducer, {
-  transformToPath,
   hasRouting,
   getCurrent,
   getLast,
@@ -21,7 +21,7 @@ describe('reducer', function() {
     // manually pass initial state to reducer,
     // because wallaby uses their internal script(/wallaby_sandbox0.html) for testing.
     const initialState = {
-      current: transformToPath(location),
+      current: transformLocationToPath(location),
       last: null
     };
 
@@ -76,13 +76,13 @@ describe('reducer', function() {
   });
 });
 
-describe('transformToPath', function() {
+describe('transformLocationToPath', function() {
   beforeEach(function(){
     history.pushState(null, null, '/');
   });
 
   it('should transform location to string', function(){
-    assert.equal(transformToPath(location), '/');
+    assert.equal(transformLocationToPath(location), '/');
   });
 });
 

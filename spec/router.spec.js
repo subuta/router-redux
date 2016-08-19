@@ -1,14 +1,13 @@
 import {
   ROUTE_CHANGE,
   ROUTE_ERROR,
-  INITIAL_ROUTE_RESOLVED
+  INITIAL_ROUTE_RESOLVED,
+  transformLocationToPath
 } from 'lib/actions.js';
 
 import routerCreator, {
   getRoutes
 } from 'lib/router.js';
-
-import {transformToPath} from 'lib/reducer.js';
 
 describe('routerCreator', function() {
 
@@ -22,7 +21,7 @@ describe('routerCreator', function() {
       getState: sandbox.spy(() => {
         return {
           routing: {
-            current: transformToPath(location)
+            current: transformLocationToPath(location)
           }
         }
       }),
@@ -63,7 +62,7 @@ describe('routerCreator', function() {
     assert.equal(store.dispatch.called, true);
     assert.equal(store.dispatch.calledWith({
       type: ROUTE_CHANGE,
-      payload: transformToPath(location)
+      payload: transformLocationToPath(location)
     }), true);
   });
 
@@ -95,7 +94,7 @@ describe('routerCreator', function() {
     const onEnter = sinon.spy(({state}, cb) => {
       assert.deepEqual(state, {
         routing: {
-          current: transformToPath(location)
+          current: transformLocationToPath(location)
         }
       });
 
@@ -125,7 +124,7 @@ describe('routerCreator', function() {
     const onEnter = sinon.spy(({state}, cb) => {
       assert.deepEqual(state, {
         routing: {
-          current: transformToPath(location)
+          current: transformLocationToPath(location)
         }
       });
       cb(false);
@@ -151,7 +150,7 @@ describe('routerCreator', function() {
     const onError = sinon.spy(({state}) => {
       assert.deepEqual(state, {
         routing: {
-          current: transformToPath(location)
+          current: transformLocationToPath(location)
         }
       });
     });
@@ -210,7 +209,7 @@ describe('routerCreator', function() {
     const onEnter = sinon.spy(({state}, cb) => {
       assert.deepEqual(state, {
         routing: {
-          current: transformToPath(location)
+          current: transformLocationToPath(location)
         }
       });
       cb(err);
@@ -236,7 +235,7 @@ describe('routerCreator', function() {
     const onEnter = sinon.spy(({state}) => {
       assert.deepEqual(state, {
         routing: {
-          current: transformToPath(location)
+          current: transformLocationToPath(location)
         }
       });
     });
@@ -251,7 +250,7 @@ describe('routerCreator', function() {
     const onEnter = sinon.spy(({state}, cb) => {
       assert.deepEqual(state, {
         routing: {
-          current: transformToPath(location)
+          current: transformLocationToPath(location)
         }
       });
     });

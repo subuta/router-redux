@@ -2,6 +2,7 @@ import {
   routeChange,
   routeError,
   initialRouteResolved,
+  transformLocationToPath,
   push,
   replace,
   go,
@@ -88,5 +89,20 @@ describe('isHistoryAction', function() {
 
   it('should return false with null', function(){
     assert.equal(isHistoryAction(null), false);
+  });
+});
+
+describe('transformLocationToPath', function() {
+  beforeEach(function(){
+    history.pushState(null, null, '/');
+  });
+
+  it('should transform location to string', function(){
+    assert.deepEqual(transformLocationToPath(location), '/');
+  });
+
+  it('should transform location to string with query param', function(){
+    history.pushState(null, null, '/sample?hoge=true&fuga=true');
+    assert.deepEqual(transformLocationToPath(location), '/sample');
   });
 });
