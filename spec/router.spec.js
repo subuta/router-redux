@@ -2,11 +2,13 @@ import {
   ROUTE_CHANGE,
   ROUTE_ERROR,
   INITIAL_ROUTE_RESOLVED,
-  transformLocationToPath
+  transformLocationToPath,
+  getQuery
 } from 'lib/actions.js';
 
 import routerCreator, {
-  getRoutes
+  getRoutes,
+  createRoute
 } from 'lib/router.js';
 
 describe('routerCreator', function() {
@@ -62,7 +64,7 @@ describe('routerCreator', function() {
     assert.equal(store.dispatch.called, true);
     assert.equal(store.dispatch.calledWith({
       type: ROUTE_CHANGE,
-      payload: transformLocationToPath(location)
+      payload: createRoute(transformLocationToPath(location))
     }), true);
   });
 
@@ -284,5 +286,30 @@ describe('getRoutes', function() {
 
   it('should return routes', function(){
     assert.deepEqual(getRoutes(), {});
+  });
+});
+
+describe('createRoute', function() {
+  beforeEach(function(){
+    history.pushState(null, null, '/');
+  });
+
+  it('should create route object', function(){
+    assert.deepEqual(createRoute(transformLocationToPath(location)), {
+      path: '/',
+      route: null,
+      params: null,
+      query: ''
+    });
+  });
+
+  it('should create route object with query param', function(){
+    history.pushState(null, null, '/sample?hoge=true&fuga=true');
+    assert.deepEqual(createRoute(transformLocationToPath(location), getQuery(location)), {
+      path: '/sample',
+      route: null,
+      params: null,
+      query: 'hoge=true&fuga=true'
+    });
   });
 });

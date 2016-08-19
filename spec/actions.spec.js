@@ -4,7 +4,6 @@ import {
   initialRouteResolved,
   transformLocationToPath,
   getQuery,
-  createRoute,
   push,
   replace,
   go,
@@ -121,26 +120,5 @@ describe('getQuery', function() {
   it('should return query string with query param', function(){
     history.pushState(null, null, '/sample?hoge=true&fuga=true');
     assert.deepEqual(getQuery(location), 'hoge=true&fuga=true');
-  });
-});
-
-describe('createRoute', function() {
-  beforeEach(function(){
-    history.pushState(null, null, '/');
-  });
-
-  it('should create route object', function(){
-    assert.deepEqual(createRoute(transformLocationToPath(location)), {
-      path: '/',
-      query: ''
-    });
-  });
-
-  it('should create route object with query param', function(){
-    history.pushState(null, null, '/sample?hoge=true&fuga=true');
-    assert.deepEqual(createRoute(transformLocationToPath(location), getQuery(location)), {
-      path: '/sample',
-      query: 'hoge=true&fuga=true'
-    });
   });
 });
