@@ -58,7 +58,7 @@ describe('middleware', function() {
     assert.equal(dispatch.called, true);
     assert.equal(dispatch.calledWith({
       type: PUSH,
-      payload: location
+      payload: transformToPath(location)
     }), true);
     assert.equal(history.pushState.called, true);
   });
@@ -83,7 +83,7 @@ describe('middleware', function() {
     assert.equal(dispatch.called, true);
     assert.equal(dispatch.calledWith({
       type: REPLACE,
-      payload: location
+      payload: transformToPath(location)
     }), true);
     assert.equal(history.replaceState.called, true);
   });
@@ -97,7 +97,7 @@ describe('middleware', function() {
     assert.equal(dispatch.called, true);
     assert.equal(dispatch.calledWith({
       type: GO,
-      payload: location
+      payload: transformToPath(location)
     }), true);
     assert.equal(history.go.called, true);
   });
@@ -110,7 +110,7 @@ describe('middleware', function() {
     assert.equal(dispatch.called, true);
     assert.equal(dispatch.calledWith({
       type: BACK,
-      payload: location
+      payload: transformToPath(location)
     }), true);
     assert.equal(history.back.called, true);
   });
@@ -123,7 +123,7 @@ describe('middleware', function() {
     assert.equal(dispatch.called, true);
     assert.equal(dispatch.calledWith({
       type: FORWARD,
-      payload: location
+      payload: transformToPath(location)
     }), true);
     assert.equal(history.forward.called, true);
   });
@@ -154,7 +154,7 @@ describe('middleware', function() {
     assert.equal(dispatch.called, true);
     assert.equal(dispatch.calledWith({
       type: PUSH,
-      payload: location
+      payload: transformToPath(location)
     }), true);
     assert.equal(onEnter.called, true);
     assert.equal(location.pathname, '/sample');
@@ -178,7 +178,7 @@ describe('middleware', function() {
     assert.equal(dispatch.called, true);
     assert.equal(dispatch.calledWith({
       type: PUSH,
-      payload: location
+      payload: transformToPath(location)
     }), true);
     assert.equal(onEnter.called, true);
     assert.equal(location.pathname, '/sample');
@@ -263,7 +263,7 @@ describe('middleware', function() {
     assert.equal(dispatch.called, true);
     assert.equal(dispatch.calledWith({
       type: PUSH,
-      payload: location
+      payload: transformToPath(location)
     }), true);
     assert.equal(onLeave.called, true);
     assert.equal(location.pathname, '/sample');

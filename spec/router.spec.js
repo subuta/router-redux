@@ -63,7 +63,7 @@ describe('routerCreator', function() {
     assert.equal(store.dispatch.called, true);
     assert.equal(store.dispatch.calledWith({
       type: ROUTE_CHANGE,
-      payload: location
+      payload: transformToPath(location)
     }), true);
   });
 
