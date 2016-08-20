@@ -4,13 +4,15 @@ import {
   routerReducer,
   getCurrent,
   getLast,
+  getNext,
   getRouteError,
   getIsInitalRouteResolved,
   push,
   replace,
   go,
   back,
-  forward
+  forward,
+  match
 } from 'lib/index.js';
 
 describe('index', function() {
@@ -20,6 +22,7 @@ describe('index', function() {
     assert.equal(typeof routerReducer === 'function', true);
     assert.equal(typeof getCurrent === 'function', true);
     assert.equal(typeof getLast === 'function', true);
+    assert.equal(typeof getNext === 'function', true);
     assert.equal(typeof getRouteError === 'function', true);
     assert.equal(typeof getIsInitalRouteResolved === 'function', true);
     assert.equal(typeof push === 'function', true);
@@ -27,5 +30,6 @@ describe('index', function() {
     assert.equal(typeof go === 'function', true);
     assert.equal(typeof back === 'function', true);
     assert.equal(typeof forward === 'function', true);
+    assert.equal(typeof match === 'function', true);
   });
 });

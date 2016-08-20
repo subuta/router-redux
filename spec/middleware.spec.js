@@ -1,15 +1,19 @@
 import {
+  transformLocationToPath,
+  getQuery,
   PUSH,
   REPLACE,
   GO,
   BACK,
   FORWARD,
   ROUTE_ERROR,
-  INITIAL_ROUTE_RESOLVED
+  INITIAL_ROUTE_RESOLVED,
+  SET_NEXT_ROUTE
 } from 'lib/actions.js';
 import routerMiddleware from 'lib/middleware.js';
-import {transformToPath} from 'lib/reducer.js';
-import routerCreator from 'lib/router.js';
+import routerCreator, {
+  createRoute
+} from 'lib/router.js';
 
 describe('middleware', function() {
 
@@ -23,7 +27,7 @@ describe('middleware', function() {
       getState: sandbox.spy(() => {
         return {
           routing: {
-            current: transformToPath(location)
+            current: createRoute(transformLocationToPath(location))
           }
         }
       }),
@@ -58,7 +62,7 @@ describe('middleware', function() {
     assert.equal(dispatch.called, true);
     assert.equal(dispatch.calledWith({
       type: PUSH,
-      payload: location
+      payload: createRoute(transformLocationToPath(location))
     }), true);
     assert.equal(history.pushState.called, true);
   });
@@ -74,6 +78,41 @@ describe('middleware', function() {
     assert.equal(history.pushState.called, false);
   });
 
+  it('should not accept duplicated push action even if url has query param', function(){
+    // starts with '/?sample=true'
+    history.pushState(null, null, '/?sample=true');
+    // restore current spy.
+    history.pushState.restore();
+
+    // try to spy one more time.
+    history.pushState = sandbox.spy(history, 'pushState');
+
+    const store = {
+      getState: sandbox.spy(() => {
+        return {
+          routing: {
+            current: createRoute(transformLocationToPath(location), getQuery(location))
+          }
+        }
+      }),
+      dispatch: sandbox.spy(() => {})
+    };
+
+    router = routerCreator(store);
+    dispatch = store.dispatch;
+    middleware = routerMiddleware(store)(dispatch);
+
+    // try to change url from '/?sample=true' to '/?sample=true'
+    middleware({
+      type: PUSH,
+      payload: '/?sample=true'
+    });
+
+    assert.equal(dispatch.called, false);
+    // ensure pushState to sample url not called.
+    assert.equal(history.pushState.called, false);
+  });
+
   it('should accept replace action', function(){
     middleware({
       type: REPLACE,
@@ -83,7 +122,7 @@ describe('middleware', function() {
     assert.equal(dispatch.called, true);
     assert.equal(dispatch.calledWith({
       type: REPLACE,
-      payload: location
+      payload: createRoute(transformLocationToPath(location))
     }), true);
     assert.equal(history.replaceState.called, true);
   });
@@ -97,7 +136,7 @@ describe('middleware', function() {
     assert.equal(dispatch.called, true);
     assert.equal(dispatch.calledWith({
       type: GO,
-      payload: location
+      payload: createRoute(transformLocationToPath(location))
     }), true);
     assert.equal(history.go.called, true);
   });
@@ -110,7 +149,7 @@ describe('middleware', function() {
     assert.equal(dispatch.called, true);
     assert.equal(dispatch.calledWith({
       type: BACK,
-      payload: location
+      payload: createRoute(transformLocationToPath(location))
     }), true);
     assert.equal(history.back.called, true);
   });
@@ -123,7 +162,7 @@ describe('middleware', function() {
     assert.equal(dispatch.called, true);
     assert.equal(dispatch.calledWith({
       type: FORWARD,
-      payload: location
+      payload: createRoute(transformLocationToPath(location))
     }), true);
     assert.equal(history.forward.called, true);
   });
@@ -139,7 +178,7 @@ describe('middleware', function() {
     const onEnter = sinon.spy(({state}, cb) => {
       assert.deepEqual(state, {
         routing: {
-          current: transformToPath(location)
+          current: createRoute(transformLocationToPath(location))
         }
       });
       cb();
@@ -154,7 +193,7 @@ describe('middleware', function() {
     assert.equal(dispatch.called, true);
     assert.equal(dispatch.calledWith({
       type: PUSH,
-      payload: location
+      payload: createRoute(transformLocationToPath(location))
     }), true);
     assert.equal(onEnter.called, true);
     assert.equal(location.pathname, '/sample');
@@ -164,7 +203,7 @@ describe('middleware', function() {
     const onEnter = sinon.spy(({state}) => {
       assert.deepEqual(state, {
         routing: {
-          current: transformToPath(location)
+          current: createRoute(transformLocationToPath(location))
         }
       });
     });
@@ -178,7 +217,7 @@ describe('middleware', function() {
     assert.equal(dispatch.called, true);
     assert.equal(dispatch.calledWith({
       type: PUSH,
-      payload: location
+      payload: createRoute(transformLocationToPath(location))
     }), true);
     assert.equal(onEnter.called, true);
     assert.equal(location.pathname, '/sample');
@@ -188,43 +227,10 @@ describe('middleware', function() {
     const onEnter = sinon.spy(({state}, cb) => {
       assert.deepEqual(state, {
         routing: {
-          current: transformToPath(location)
+          current: createRoute(transformLocationToPath(location))
         }
       });
     });
-    router.onEnter('/sample', onEnter);
-
-    middleware({
-      type: PUSH,
-      payload: '/sample'
-    });
-
-    assert.equal(dispatch.calledOnce, true);
-    assert.equal(dispatch.calledWith({
-      type: INITIAL_ROUTE_RESOLVED
-    }), true);
-    assert.equal(onEnter.called, true);
-    assert.equal(location.pathname, '/');
-  });
-
-  it('should not dispatch history action if router\'s onEnter calls callback with falsy value.', function(){
-    const onEnter = sinon.spy(({state}, cb) => {
-      assert.deepEqual(state, {
-        routing: {
-          current: transformToPath(location)
-        }
-      });
-      cb(false);
-    });
-    const onError = sinon.spy(({state}) => {
-      assert.deepEqual(state, {
-        routing: {
-          current: transformToPath(location)
-        }
-      });
-    });
-
-    router.onError(onError);
     router.onEnter('/sample', onEnter);
 
     middleware({
@@ -237,6 +243,47 @@ describe('middleware', function() {
       type: INITIAL_ROUTE_RESOLVED
     }), true);
     assert.equal(dispatch.calledWith({
+      type: SET_NEXT_ROUTE,
+      payload: createRoute('/sample')
+    }), true);
+    assert.equal(onEnter.called, true);
+    assert.equal(location.pathname, '/');
+  });
+
+  it('should not dispatch history action if router\'s onEnter calls callback with falsy value.', function(){
+    const onEnter = sinon.spy(({state}, cb) => {
+      assert.deepEqual(state, {
+        routing: {
+          current: createRoute(transformLocationToPath(location))
+        }
+      });
+      cb(false);
+    });
+    const onError = sinon.spy(({state}) => {
+      assert.deepEqual(state, {
+        routing: {
+          current: createRoute(transformLocationToPath(location))
+        }
+      });
+    });
+
+    router.onError(onError);
+    router.onEnter('/sample', onEnter);
+
+    middleware({
+      type: PUSH,
+      payload: '/sample'
+    });
+
+    assert.equal(dispatch.callCount === 3, true);
+    assert.equal(dispatch.calledWith({
+      type: INITIAL_ROUTE_RESOLVED
+    }), true);
+    assert.equal(dispatch.calledWith({
+      type: SET_NEXT_ROUTE,
+      payload: createRoute('/sample')
+    }), true);
+    assert.equal(dispatch.calledWith({
       type: ROUTE_ERROR,
       payload: true
     }), true);
@@ -246,10 +293,10 @@ describe('middleware', function() {
   });
 
   it('should call router\'s onLeave hook on push', function(){
-    const onLeave = sinon.spy((state) => {
+    const onLeave = sinon.spy(({state}) => {
       assert.deepEqual(state, {
         routing: {
-          current: transformToPath(location)
+          current: createRoute(transformLocationToPath(location))
         }
       });
     });
@@ -263,7 +310,12 @@ describe('middleware', function() {
     assert.equal(dispatch.called, true);
     assert.equal(dispatch.calledWith({
       type: PUSH,
-      payload: location
+      payload: {
+        path: '/sample',
+        route: null,
+        params: null,
+        query: ''
+      }
     }), true);
     assert.equal(onLeave.called, true);
     assert.equal(location.pathname, '/sample');

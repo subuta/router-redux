@@ -1,16 +1,14 @@
 import {
   ROUTE_CHANGE,
   ROUTE_ERROR,
-  INITIAL_ROUTE_RESOLVED
+  INITIAL_ROUTE_RESOLVED,
+  SET_NEXT_ROUTE,
+  transformLocationToPath
 } from 'lib/actions.js';
-import reducer, {
-  transformToPath,
-  hasRouting,
-  getCurrent,
-  getLast,
-  getRouteError,
-  getIsInitalRouteResolved
-} from 'lib/reducer.js';
+import reducer from 'lib/reducer.js';
+import {
+  createRoute
+} from 'lib/router.js';
 
 describe('reducer', function() {
   beforeEach(function(){
@@ -21,7 +19,7 @@ describe('reducer', function() {
     // manually pass initial state to reducer,
     // because wallaby uses their internal script(/wallaby_sandbox0.html) for testing.
     const initialState = {
-      current: transformToPath(location),
+      current: transformLocationToPath(location),
       last: null
     };
 
@@ -39,10 +37,12 @@ describe('reducer', function() {
       last: null
     }, {
       type: ROUTE_CHANGE,
-      payload: location
+      payload: createRoute(transformLocationToPath(location))
     }), {
-      current: '/sample',
-      last: '/'
+      current: { path: '/sample', route: null, params: null, query: '' },
+      last: '/',
+      next: null,
+      routeError: null
     });
   });
 
@@ -57,7 +57,24 @@ describe('reducer', function() {
     }), {
       current: '/',
       last: null,
-      routeError: true
+      routeError: true,
+      next: null
+    });
+  });
+
+  it('should apply setNextRoute to state', function(){
+    assert.deepEqual(reducer({
+      current: '/',
+      last: null,
+      routeError: false
+    }, {
+      type: SET_NEXT_ROUTE,
+      payload: true
+    }), {
+      current: '/',
+      last: null,
+      routeError: false,
+      next: true
     });
   });
 
@@ -76,44 +93,12 @@ describe('reducer', function() {
   });
 });
 
-describe('transformToPath', function() {
+describe('transformLocationToPath', function() {
   beforeEach(function(){
     history.pushState(null, null, '/');
   });
 
   it('should transform location to string', function(){
-    assert.equal(transformToPath(location), '/');
-  });
-});
-
-describe('hasRouting', function() {
-  beforeEach(function(){
-    history.pushState(null, null, '/');
-  });
-
-  it('should return null with valid state', function(){
-    assert.equal(hasRouting({routing: {}}), true);
-  });
-
-  it('should return null with invalid state', function(){
-    assert.equal(hasRouting({}), null);
-  });
-});
-
-describe('selectors', function() {
-  it('should return current from the state', function(){
-    assert.equal(getCurrent({routing: {current: 'sample'}}), 'sample');
-  });
-
-  it('should return last from the state', function(){
-    assert.equal(getLast({routing: {last: 'sample'}}), 'sample');
-  });
-
-  it('should return routeError from the state', function(){
-    assert.equal(getRouteError({routing: {routeError: true}}), true);
-  });
-
-  it('should return isInitialRouteResolved from the state', function(){
-    assert.equal(getIsInitalRouteResolved({routing: {isInitialRouteResolved: true}}), true);
+    assert.equal(transformLocationToPath(location), '/');
   });
 });
