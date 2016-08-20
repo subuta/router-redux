@@ -2,8 +2,7 @@
   "jspm": {
     "name": "router-redux",
     "dependencies": {
-      "babel": "babel-core@^6.11.4",
-      "object-assign": "^4.1.0"
+      "babel": "babel-core@^6.11.4"
     },
     "devDependencies": {
       "plugin-babel": "systemjs-plugin-babel@^0.0.12",
@@ -69,7 +68,7 @@
   },
   "name": "router-redux",
   "description": "transform route change as redux action.",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "dependencies": {},
   "devDependencies": {
     "babel-core": "^6.10.4",
