@@ -1,6 +1,6 @@
 # router-redux [![Build Status](https://travis-ci.org/subuta/router-redux.svg?branch=master)](https://travis-ci.org/subuta/router-redux) [![Coverage Status](https://coveralls.io/repos/github/subuta/router-redux/badge.svg?branch=master)](https://coveralls.io/github/subuta/router-redux?branch=master)
 View framework agnostic router for redux :)
-this is [react-router-redux](https://github.com/reactjs/react-router-redux) for your vdom-based project.
+This is [react-router-redux](https://github.com/reactjs/react-router-redux) for your vdom-based project.
 
 - `virtual-dom`系のライブラリを利用した開発フローを簡単にします。
     - [virtual-dom](https://github.com/Matt-Esch/virtual-dom)と使ったり
@@ -17,7 +17,7 @@ npm install router-redux --save
 まず、`routerReducer`をあなたの`reducer`に`routing`をキーとして渡す必要があります。
 
 ```javascript
-// in reducers/index.js
+// In reducers/index.js
 import {combineReducers} from 'redux';
 import {routerReducer} from 'router-redux';
 
@@ -32,7 +32,7 @@ export default rootReducer;
 `routerCreator`から返却された`router`をexportしておいてください。
  
 ```javascript
-// in example/store.js
+// In example/store.js
 import routerCreator, {routerMiddleware} from 'lib/index.js';
 
 import reducer from './reducers/index.js';
@@ -67,7 +67,7 @@ router.onError(({state, dispatch}) => {
 router.onEnter('/', ({state}, cb) => {
   console.log('[top]loading ...', state);
   setTimeout(() => {
-    // user's navigation action will blocked untill `cb` called.
+    // `cb`が呼び出されるまで、ユーザのページ遷移はブロックされます。
     console.log('[top]timer fired');
     cb();
     // `cb`をfalsyな値もしくはErrorオブジェクトを引数として呼び出した場合
@@ -164,6 +164,26 @@ export default rootReducer;
 - routeErrorが`router.onEnter`で発生した時に呼ばれます。
 - 実際のrouteErrorは`getRouteError`セレクタを利用して取得できます。
 
+### `match`
+- `math({path, anotherPath})`
+- この関数を使うことで、currentPath(location)がpathにmatchするかチェックする事ができます。
+- もしpathが`path parameter`を含んでいる場合、matchはマッチしたパラメータをオブジェクトとして返却します。
+
+```javascript
+import {
+  getCurrent,
+  match
+} from 'router-redux';
+
+const currentPath = getCurrent(state) && getCurrent(state).path;
+
+// もしcurrentPath = `/`の場合
+match('/', currentPath) // `{}`を返却します。
+
+// もしcurrentPath = `/foo/1`の場合
+match('/foo/:id', currentPath) // `{id: 1}`を返却します。
+```
+
 ### actions
 - redux向けのアクションを作ります。このアクションを利用してstore.dispatchを呼び出す必要があります。 
 
@@ -227,7 +247,7 @@ jspm i
 ```
 caddy
 
-# open link.
+# Open link.
 open http://localhost:3000
 ```
 
