@@ -23,10 +23,7 @@ First you need to pass `routerReducer` to your own `reducer` with `routing` key.
 import {combineReducers} from 'redux';
 import {routerReducer} from 'router-redux';
 
-import counter from './counter.js'; // your own reducer
-
 const rootReducer = combineReducers({
-  counter,
   routing: routerReducer // here
 });
 
@@ -74,7 +71,6 @@ router.onEnter('/', ({state}, cb) => {
   setTimeout(() => {
     // user's navigation action will blocked untill `cb` called.
     console.log('[top]timer fired');
-    // cb(new Error('[top]thrown error'));
     cb();
     // if you call `cb` with falsy value or Error object,
     // router-redux will emit router's onError. and stop routing to path(/).
@@ -91,7 +87,7 @@ router.onLeave('/', (state) => {
 ## Documentation
 
 - API idea came from [react-router-redux](https://github.com/reactjs/react-router-redux) thanks!
-- Use modified version of [object-assign](https://github.com/sindresorhus/object-assign) to reduce library size. thanks!
+- Includes modified version of [object-assign](https://github.com/sindresorhus/object-assign) to reduce library size. thanks!
 
 ### `routerMiddleware`
 router-redux's middleware function for redux.
@@ -183,10 +179,10 @@ and cancel navigation. (this is useful for handling un-authorized response or Se
 ### selectors
 - will extracts value from your state. you can use selectors with [reselect](https://github.com/reactjs/reselect) if you like.
 - `route` has these properties
-  - path(`String`): `/foo/1` // path
-  - query(`String`): `sample=true` // query param. you can use third-party library(https://github.com/ljharb/qs) to parse query.
-  - params(`Object`): `{id: 1}` // matched params(declared in onEnter)
-  - route(`String`):  `/foo/:id` // matched route(declared in onEnter)
+  - path(`String`): `/foo/1 // path`
+  - query(`String`): `sample=true // query param. you can use third-party library(https://github.com/ljharb/qs) to parse query.`
+  - params(`Object`): `{id: 1} // matched params(declared in onEnter)`
+  - route(`String`):  `/foo/:id // matched route(declared in onEnter)`
 
 #### `getCurrent(state)`
 - extracts `current route` from `state`

@@ -21,10 +21,7 @@ npm install router-redux --save
 import {combineReducers} from 'redux';
 import {routerReducer} from 'router-redux';
 
-import counter from './counter.js'; // 自分で書いたやつ
-
 const rootReducer = combineReducers({
-  counter,
   routing: routerReducer // ココ
 });
 
@@ -61,33 +58,34 @@ import {
 
 // もし初回ルーティング時のエラーを検知したいのであれば、まずonErrorを登録してください。
 router.onError(({state, dispatch}) => {
-  const currentPath = getCurrent(state); // will extract currentPath from state(like '/')
-  // you can navigate user to error page or call any other redux action.
+  const currentPath = getCurrent(state).path; // statからcurrentPathを取得します。
+  // ユーザをエラーページへ遷移させるか、任意のreduxアクションを呼び出すことができます。
   dispatch(push('/error'));
 });
 
 // ユーザがpath(/)に遷移した時に呼ばれます。 
 router.onEnter('/', ({state}, cb) => {
-  console.log('loading ...');
+  console.log('[top]loading ...', state);
   setTimeout(() => {
-    console.log('enter in top');
     // user's navigation action will blocked untill `cb` called.
+    console.log('[top]timer fired');
     cb();
-    // if you call `cb` with falsy value or Error object,
-    // router-redux will emit router's onError. and stop routing to path(/).
-    // cb(new Error('some error in top'));
+    // `cb`をfalsyな値もしくはErrorオブジェクトを引数として呼び出した場合
+    // router-reduxはrouteのonErrorを呼び出し、path(/)への遷移を中断します。
+    // cb(new Error('[top]thrown error'));
   }, 1000);
 });
 
 // ユーザがpath(/)から別のpathに遷移する時に呼ばれます。
 router.onLeave('/', (state) => {
-  console.log('leave from top');
+  console.log('[top]leave');
 });
 ```
 
 ## Documentation
 
-基本的なAPIのアイデアは [react-router-redux](https://github.com/reactjs/react-router-redux) を参考にしてます。ありがとうございます！
+- 基本的なAPIのアイデアは [react-router-redux](https://github.com/reactjs/react-router-redux) を参考にしてます。thanks!
+- 変更を加えた[object-assign](https://github.com/sindresorhus/object-assign)をライブラリサイズを減らす目的で含んでいます。thanks!
 
 ### `routerMiddleware`
 Redux向けのrouter-reduxのmiddlewareです。
@@ -115,10 +113,7 @@ Redux向けのrouter-reduxのreducerです。
 import {combineReducers} from 'redux';
 import {routerReducer} from 'router-redux';
 
-import counter from './counter.js'; // 自分で書いてるやつ
-
 const rootReducer = combineReducers({
-  counter,
   routing: routerReducer // ココ
 });
 
@@ -135,6 +130,8 @@ export default rootReducer;
 上記の`routerCreator`から作られます。これを利用して、独自のhandlerをrouterに定義する事ができます。
 
 #### `router.onEnter(path, handler)`
+- `path`には`/foo/:id`のような`path parameter`を含む事が出来ます。
+- もし`path parameter`を指定した場合、`route-redux`は`route`オブジェクトの`route`と`params`プロパティを更新します。(詳細は`selectors`セクションを参照)
 - `handler({state, dispatch}, [callback])`
 - ユーザがpushState/popStateもしくはURLバーなどからの直接の遷移によって`path`に来た時に呼ばれます。
 - handlerは`callback`関数が呼ばれるまで処理をブロックします。
@@ -143,10 +140,24 @@ export default rootReducer;
 `router-redux`側で`router.onError`を呼び出し、遷移をキャンセルします。
 (これは認証失敗や、サーバエラーが発生した場合に便利です。)
 - もし`callback`関数を省略した場合は、onEnter関数内の結果はページ遷移に影響を及ぼしません。(非同期になるイメージ)
+- もし`/`から`/foo/1`に遷移した場合は、`onEnter`に渡される`state.routing`は以下のようになります。
+
+| key                    | value                          |
+|:-----------------------|:-------------------------------|
+| current                | 現在のroute (`/`)               |
+| next                   | これから遷移するroute (`/foo/1`) |
+| last                   | 直前のroute                     |
   
 #### `router.onLeave(path, handler)`
 - `handler({state, dispatch})`
 - ユーザがpushState/popStateに寄って、`path`から去った時に呼ばれます。
+- もし`/`から`/foo/1`に遷移した場合は、`onLeave`に渡される`state.routing`は以下のようになります。 
+  
+| key                    | value            |
+|:-----------------------|:-----------------|
+| current                | 現在のroute (`/`) |
+| next                   | `null`           |
+| last                   | 直前のroute       |
  
 #### `router.onError(handler)`
 - `handler({state, dispatch})`
@@ -166,12 +177,21 @@ export default rootReducer;
 
 ### selectors
 - stateから値を抽出します。これらのセレクタは [reselect](https://github.com/reactjs/reselect) などから呼ぶことを想定しています。
+- `route`は以下のプロパティを持ちます。
+  - path(`String`): `/foo/1 // path`
+  - query(`String`): `sample=true // クエリパラメータ. クエリ文字列のparseをするためには、外部のライブラリ(https://github.com/ljharb/qs など)を利用してください。`
+  - params(`Object`): `{id: 1} // matchしたパラメータ(onEnterで宣言したもの)`
+  - route(`String`):  `/foo/:id // matchしたroute(onEnterで宣言したもの)`
+
 
 #### `getCurrent(state)`
-- `現在のpath`を`state`から抽出します。
+- `現在のroute`を`state`から抽出します。
 
 #### `getLast(state)`
-- `直前のpath`を`state`から抽出します。
+- `直前のroute`を`state`から抽出します。
+
+#### `getNext(state)`
+- `これから遷移するroute`を`state`から抽出します。
 
 #### `getRouteError(state)`
 - `routeError`を`state`から抽出します。
@@ -213,11 +233,3 @@ open http://localhost:3000
 
 ## LICENSE
 [MIT](https://opensource.org/licenses/MIT)
-
-## TODO
-- [x] add README.
-- [x] publish to npm  
-- [x] add tests
-- [ ] add better route name handling with these libraries
-  - [url-pattern](https://github.com/snd/url-pattern)
-  - [qs](https://github.com/ljharb/qs)
