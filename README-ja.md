@@ -33,7 +33,7 @@ export default rootReducer;
  
 ```javascript
 // In example/store.js
-import routerCreator, {routerMiddleware} from 'lib/index.js';
+import routerCreator, {routerMiddleware} from 'router-redux';
 
 import reducer from './reducers/index.js';
 const middlewares = [routerMiddleware];
@@ -93,7 +93,7 @@ Redux向けのrouter-reduxのmiddlewareです。
 
 ```javascript
 // in store.js
-import routerCreator, {routerMiddleware} from 'lib/index.js';
+import routerCreator, {routerMiddleware} from 'router-redux';
 
 import reducer from './reducers/index.js';
 const middlewares = [routerMiddleware];

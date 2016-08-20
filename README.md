@@ -35,7 +35,7 @@ Then create and export `router` using `routerCreator`.
  
 ```javascript
 // In example/store.js
-import routerCreator, {routerMiddleware} from 'lib/index.js';
+import routerCreator, {routerMiddleware} from 'router-redux';
 
 import reducer from './reducers/index.js';
 const middlewares = [routerMiddleware];
@@ -95,7 +95,7 @@ You need to register it in your `createStore` function.
 
 ```javascript
 // In store.js
-import routerCreator, {routerMiddleware} from 'lib/index.js';
+import routerCreator, {routerMiddleware} from 'router-redux';
 
 import reducer from './reducers/index.js';
 const middlewares = [routerMiddleware];
