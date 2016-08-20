@@ -93,15 +93,7 @@ describe('routerCreator', function() {
     history.pushState(null, null, '/?sample=true');
 
     const router = routerCreator(store);
-    const onEnter = sinon.spy(({state}, cb) => {
-      assert.deepEqual(state, {
-        routing: {
-          current: { path: '/', route: null, params: null, query: '' }
-        }
-      });
-      cb();
-    });
-
+    const onEnter = sinon.spy(({state}, cb) => { cb(); });
     router.onEnter('/', onEnter);
 
     requestAnimationFrame(() => {

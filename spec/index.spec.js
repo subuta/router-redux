@@ -4,6 +4,7 @@ import {
   routerReducer,
   getCurrent,
   getLast,
+  getNext,
   getRouteError,
   getIsInitalRouteResolved,
   push,
@@ -21,6 +22,7 @@ describe('index', function() {
     assert.equal(typeof routerReducer === 'function', true);
     assert.equal(typeof getCurrent === 'function', true);
     assert.equal(typeof getLast === 'function', true);
+    assert.equal(typeof getNext === 'function', true);
     assert.equal(typeof getRouteError === 'function', true);
     assert.equal(typeof getIsInitalRouteResolved === 'function', true);
     assert.equal(typeof push === 'function', true);

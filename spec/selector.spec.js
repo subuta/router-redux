@@ -2,6 +2,7 @@ import {
   hasRouting,
   getCurrent,
   getLast,
+  getNext,
   getRouteError,
   getIsInitalRouteResolved
 } from 'lib/selector.js';
@@ -27,6 +28,10 @@ describe('selectors', function() {
 
   it('should return last from the state', function(){
     assert.equal(getLast({routing: {last: 'sample'}}), 'sample');
+  });
+
+  it('should return next from the state', function(){
+    assert.equal(getNext({routing: {next: 'sample'}}), 'sample');
   });
 
   it('should return routeError from the state', function(){

@@ -18,16 +18,16 @@ router.onError(({state, dispatch}) => {
 });
 
 router.onEnter('/', ({state}, cb) => {
-  console.log('loading ...');
+  console.log('[top]loading ...', state);
   setTimeout(() => {
-    console.log('enter in top');
-    cb(new Error('some error in top'));
-    // cb();
+    console.log('[top]timer fired');
+    // cb(new Error('[top]thrown error'));
+    cb();
   }, 1000);
 });
 
 router.onLeave('/', ({state}) => {
-  console.log('leave from top');
+  console.log('[top]leave');
 });
 
 export default inject(({state}) => {

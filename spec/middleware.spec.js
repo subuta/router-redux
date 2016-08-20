@@ -293,7 +293,7 @@ describe('middleware', function() {
   });
 
   it('should call router\'s onLeave hook on push', function(){
-    const onLeave = sinon.spy((state) => {
+    const onLeave = sinon.spy(({state}) => {
       assert.deepEqual(state, {
         routing: {
           current: createRoute(transformLocationToPath(location))

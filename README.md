@@ -63,17 +63,18 @@ import {
 
 // register onError first (if you need to catch initialRouting error)
 router.onError(({state, dispatch}) => {
-  const currentPath = getCurrent(state); // will extract currentPath from state(like '/')
+  const currentPath = getCurrent(state).path; // will extract currentPath from state
   // you can navigate user to error page or call any other redux action.
   dispatch(push('/error'));
 });
 
 // called when user entered to path(/) 
 router.onEnter('/', ({state}, cb) => {
-  console.log('loading ...');
+  console.log('[top]loading ...', state);
   setTimeout(() => {
-    console.log('enter in top');
     // user's navigation action will blocked untill `cb` called.
+    console.log('[top]timer fired');
+    // cb(new Error('[top]thrown error'));
     cb();
     // if you call `cb` with falsy value or Error object,
     // router-redux will emit router's onError. and stop routing to path(/).
@@ -83,7 +84,7 @@ router.onEnter('/', ({state}, cb) => {
 
 // called when user leave from path(/)
 router.onLeave('/', (state) => {
-  console.log('leave from top');
+  console.log('[top]leave');
 });
 ```
 
@@ -117,10 +118,7 @@ you need to register it in your `combineReducers` function.
 import {combineReducers} from 'redux';
 import {routerReducer} from 'router-redux';
 
-import counter from './counter.js'; // your own reducer
-
 const rootReducer = combineReducers({
-  counter,
   routing: routerReducer // here
 });
 
@@ -137,6 +135,8 @@ you need to pass `store` to `routerCreator`, and it returns `router` for later u
 will created by `routerCreator` above. You can register your own handler function to router.
 
 #### `router.onEnter(path, handler)`
+- `path` can includes `path parameter` like (/foo/:id)
+- if you specify `path parameter` to path, `router-redux` will set `route` and `params` properties in `route` object(please refer `selectors` section).
 - `handler({state, dispatch}, [callback])`
 - called when user navigated to `path` by pushState/popState or directly(by browser's url bar)
 - handler will block routing until `callback` function is called.
@@ -144,11 +144,25 @@ will created by `routerCreator` above. You can register your own handler functio
 - if you call `callback` function with falsy value(or Error object). `router-redux` will call `router.onError`
 and cancel navigation. (this is useful for handling un-authorized response or Server error)
 - if you omit `callback` function then your onEnter result will not affect to further navigation(become asynchronous).
+- if you navigate to `/foo/1` from `/`, your state.routing in onEnter function will looks like below.
   
+| key                    | value                 |
+|:-----------------------|:----------------------|
+| current                | current route (`/`)   |
+| next                   | next route (`/foo/1`) |
+| last                   | previous route        |
+
 #### `router.onLeave(path, handler)`
 - `handler({state, dispatch})`
 - called when user navigated from `path` by pushState/popState
- 
+- if you navigate to `/foo/1` from `/`, your state.routing in onEnter function will looks like below.
+  
+| key                    | value                 |
+|:-----------------------|:----------------------|
+| current                | current route (`/`)   |
+| next                   | `null`                |
+| last                   | previous route        |
+
 #### `router.onError(handler)`
 - `handler({state, dispatch})`
 - called when routeError occurred in `router.onEnter`
@@ -167,12 +181,20 @@ and cancel navigation. (this is useful for handling un-authorized response or Se
 
 ### selectors
 - will extracts value from your state. you can use selectors with [reselect](https://github.com/reactjs/reselect) if you like.
+- `route` has these properties
+  - path(`String`): `/foo/1` // path
+  - query(`String`): `sample=true` // query param. you can use third-party library(https://github.com/ljharb/qs) to parse query.
+  - params(`Object`): `{id: 1}` // matched params(declared in onEnter)
+  - route(`String`):  `/foo/:id` // matched route(declared in onEnter)
 
 #### `getCurrent(state)`
-- extracts `current path` from `state`
+- extracts `current route` from `state`
 
 #### `getLast(state)`
-- extracts `last path` from `state`
+- extracts `last route` from `state`
+
+#### `getNext(state)`
+- extracts `next route` from `state`
 
 #### `getRouteError(state)`
 - extracts `routeError` from `state`
@@ -214,11 +236,3 @@ open http://localhost:3000
 
 ## LICENSE
 [MIT](https://opensource.org/licenses/MIT)
-
-## TODO
-- [x] add README.
-- [x] publish to npm  
-- [x] add tests
-- [ ] add better route name handling with these libraries
-  - [url-pattern](https://github.com/snd/url-pattern)
-  - [qs](https://github.com/ljharb/qs)
