@@ -2,6 +2,7 @@ import {
   ROUTE_CHANGE,
   ROUTE_ERROR,
   INITIAL_ROUTE_RESOLVED,
+  SET_NEXT_ROUTE,
   transformLocationToPath
 } from 'lib/actions.js';
 import reducer from 'lib/reducer.js';
@@ -58,6 +59,22 @@ describe('reducer', function() {
       last: null,
       routeError: true,
       next: null
+    });
+  });
+
+  it('should apply setNextRoute to state', function(){
+    assert.deepEqual(reducer({
+      current: '/',
+      last: null,
+      routeError: false
+    }, {
+      type: SET_NEXT_ROUTE,
+      payload: true
+    }), {
+      current: '/',
+      last: null,
+      routeError: false,
+      next: true
     });
   });
 

@@ -1,5 +1,6 @@
 import {
   transformLocationToPath,
+  getQuery,
   PUSH,
   REPLACE,
   GO,
@@ -74,6 +75,41 @@ describe('middleware', function() {
     });
 
     assert.equal(dispatch.called, false);
+    assert.equal(history.pushState.called, false);
+  });
+
+  it('should not accept duplicated push action even if url has query param', function(){
+    // starts with '/?sample=true'
+    history.pushState(null, null, '/?sample=true');
+    // restore current spy.
+    history.pushState.restore();
+
+    // try to spy one more time.
+    history.pushState = sandbox.spy(history, 'pushState');
+
+    const store = {
+      getState: sandbox.spy(() => {
+        return {
+          routing: {
+            current: createRoute(transformLocationToPath(location), getQuery(location))
+          }
+        }
+      }),
+      dispatch: sandbox.spy(() => {})
+    };
+
+    router = routerCreator(store);
+    dispatch = store.dispatch;
+    middleware = routerMiddleware(store)(dispatch);
+
+    // try to change url from '/?sample=true' to '/?sample=true'
+    middleware({
+      type: PUSH,
+      payload: '/?sample=true'
+    });
+
+    assert.equal(dispatch.called, false);
+    // ensure pushState to sample url not called.
     assert.equal(history.pushState.called, false);
   });
 
