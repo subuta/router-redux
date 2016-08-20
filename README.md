@@ -144,7 +144,7 @@ will created by `routerCreator` above. You can register your own handler functio
 - if you call `callback` function with falsy value(or Error object). `router-redux` will call `router.onError`
 and cancel navigation. (this is useful for handling un-authorized response or Server error)
 - if you omit `callback` function then your onEnter result will not affect to further navigation(become asynchronous).
-- if you navigate to `/foo/1` from `/`, your state.routing in onEnter function will looks like below.
+- if you navigate to `/foo/1` from `/`, your state.routing in `onEnter` function will looks like below.
   
 | key                    | value                 |
 |:-----------------------|:----------------------|
@@ -155,7 +155,7 @@ and cancel navigation. (this is useful for handling un-authorized response or Se
 #### `router.onLeave(path, handler)`
 - `handler({state, dispatch})`
 - called when user navigated from `path` by pushState/popState
-- if you navigate to `/foo/1` from `/`, your state.routing in onEnter function will looks like below.
+- if you navigate to `/foo/1` from `/`, your state.routing in `onLeave` function will looks like below.
   
 | key                    | value                 |
 |:-----------------------|:----------------------|
