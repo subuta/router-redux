@@ -6,7 +6,7 @@ this is [react-router-redux](https://github.com/reactjs/react-router-redux) for 
   - with [virtual-dom](https://github.com/Matt-Esch/virtual-dom)
   - or [snabbdom](https://github.com/paldepind/snabbdom)
 - Adds pushState/popState based client-side routing to your project.
-- Light weight(under 5K) but yet powerful router for Redux. 
+- Light weight(around 5K) but yet powerful router for Redux.
 
 [README - 日本語版](README-ja.md)
 
@@ -90,7 +90,8 @@ router.onLeave('/', (state) => {
 
 ## Documentation
 
-API idea came from [react-router-redux](https://github.com/reactjs/react-router-redux) thanks!
+- API idea came from [react-router-redux](https://github.com/reactjs/react-router-redux) thanks!
+- Use modified version of [object-assign](https://github.com/sindresorhus/object-assign) to reduce library size. thanks!
 
 ### `routerMiddleware`
 router-redux's middleware function for redux.
