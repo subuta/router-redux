@@ -6,10 +6,13 @@ import {
   BACK,
   FORWARD,
   ROUTE_ERROR,
-  INITIAL_ROUTE_RESOLVED
+  INITIAL_ROUTE_RESOLVED,
+  SET_NEXT_ROUTE
 } from 'lib/actions.js';
 import routerMiddleware from 'lib/middleware.js';
-import routerCreator from 'lib/router.js';
+import routerCreator, {
+  createRoute
+} from 'lib/router.js';
 
 describe('middleware', function() {
 
@@ -23,7 +26,7 @@ describe('middleware', function() {
       getState: sandbox.spy(() => {
         return {
           routing: {
-            current: transformLocationToPath(location)
+            current: createRoute(transformLocationToPath(location))
           }
         }
       }),
@@ -58,7 +61,7 @@ describe('middleware', function() {
     assert.equal(dispatch.called, true);
     assert.equal(dispatch.calledWith({
       type: PUSH,
-      payload: transformLocationToPath(location)
+      payload: createRoute(transformLocationToPath(location))
     }), true);
     assert.equal(history.pushState.called, true);
   });
@@ -83,7 +86,7 @@ describe('middleware', function() {
     assert.equal(dispatch.called, true);
     assert.equal(dispatch.calledWith({
       type: REPLACE,
-      payload: transformLocationToPath(location)
+      payload: createRoute(transformLocationToPath(location))
     }), true);
     assert.equal(history.replaceState.called, true);
   });
@@ -97,7 +100,7 @@ describe('middleware', function() {
     assert.equal(dispatch.called, true);
     assert.equal(dispatch.calledWith({
       type: GO,
-      payload: transformLocationToPath(location)
+      payload: createRoute(transformLocationToPath(location))
     }), true);
     assert.equal(history.go.called, true);
   });
@@ -110,7 +113,7 @@ describe('middleware', function() {
     assert.equal(dispatch.called, true);
     assert.equal(dispatch.calledWith({
       type: BACK,
-      payload: transformLocationToPath(location)
+      payload: createRoute(transformLocationToPath(location))
     }), true);
     assert.equal(history.back.called, true);
   });
@@ -123,7 +126,7 @@ describe('middleware', function() {
     assert.equal(dispatch.called, true);
     assert.equal(dispatch.calledWith({
       type: FORWARD,
-      payload: transformLocationToPath(location)
+      payload: createRoute(transformLocationToPath(location))
     }), true);
     assert.equal(history.forward.called, true);
   });
@@ -139,7 +142,7 @@ describe('middleware', function() {
     const onEnter = sinon.spy(({state}, cb) => {
       assert.deepEqual(state, {
         routing: {
-          current: transformLocationToPath(location)
+          current: createRoute(transformLocationToPath(location))
         }
       });
       cb();
@@ -154,7 +157,7 @@ describe('middleware', function() {
     assert.equal(dispatch.called, true);
     assert.equal(dispatch.calledWith({
       type: PUSH,
-      payload: transformLocationToPath(location)
+      payload: createRoute(transformLocationToPath(location))
     }), true);
     assert.equal(onEnter.called, true);
     assert.equal(location.pathname, '/sample');
@@ -164,7 +167,7 @@ describe('middleware', function() {
     const onEnter = sinon.spy(({state}) => {
       assert.deepEqual(state, {
         routing: {
-          current: transformLocationToPath(location)
+          current: createRoute(transformLocationToPath(location))
         }
       });
     });
@@ -178,7 +181,7 @@ describe('middleware', function() {
     assert.equal(dispatch.called, true);
     assert.equal(dispatch.calledWith({
       type: PUSH,
-      payload: transformLocationToPath(location)
+      payload: createRoute(transformLocationToPath(location))
     }), true);
     assert.equal(onEnter.called, true);
     assert.equal(location.pathname, '/sample');
@@ -188,7 +191,7 @@ describe('middleware', function() {
     const onEnter = sinon.spy(({state}, cb) => {
       assert.deepEqual(state, {
         routing: {
-          current: transformLocationToPath(location)
+          current: createRoute(transformLocationToPath(location))
         }
       });
     });
@@ -199,9 +202,13 @@ describe('middleware', function() {
       payload: '/sample'
     });
 
-    assert.equal(dispatch.calledOnce, true);
+    assert.equal(dispatch.calledTwice, true);
     assert.equal(dispatch.calledWith({
       type: INITIAL_ROUTE_RESOLVED
+    }), true);
+    assert.equal(dispatch.calledWith({
+      type: SET_NEXT_ROUTE,
+      payload: createRoute('/sample')
     }), true);
     assert.equal(onEnter.called, true);
     assert.equal(location.pathname, '/');
@@ -211,7 +218,7 @@ describe('middleware', function() {
     const onEnter = sinon.spy(({state}, cb) => {
       assert.deepEqual(state, {
         routing: {
-          current: transformLocationToPath(location)
+          current: createRoute(transformLocationToPath(location))
         }
       });
       cb(false);
@@ -219,7 +226,7 @@ describe('middleware', function() {
     const onError = sinon.spy(({state}) => {
       assert.deepEqual(state, {
         routing: {
-          current: transformLocationToPath(location)
+          current: createRoute(transformLocationToPath(location))
         }
       });
     });
@@ -232,9 +239,13 @@ describe('middleware', function() {
       payload: '/sample'
     });
 
-    assert.equal(dispatch.calledTwice, true);
+    assert.equal(dispatch.callCount === 3, true);
     assert.equal(dispatch.calledWith({
       type: INITIAL_ROUTE_RESOLVED
+    }), true);
+    assert.equal(dispatch.calledWith({
+      type: SET_NEXT_ROUTE,
+      payload: createRoute('/sample')
     }), true);
     assert.equal(dispatch.calledWith({
       type: ROUTE_ERROR,
@@ -249,7 +260,7 @@ describe('middleware', function() {
     const onLeave = sinon.spy((state) => {
       assert.deepEqual(state, {
         routing: {
-          current: transformLocationToPath(location)
+          current: createRoute(transformLocationToPath(location))
         }
       });
     });
@@ -263,7 +274,12 @@ describe('middleware', function() {
     assert.equal(dispatch.called, true);
     assert.equal(dispatch.calledWith({
       type: PUSH,
-      payload: transformLocationToPath(location)
+      payload: {
+        path: '/sample',
+        route: null,
+        params: null,
+        query: ''
+      }
     }), true);
     assert.equal(onLeave.called, true);
     assert.equal(location.pathname, '/sample');

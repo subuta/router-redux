@@ -7,10 +7,13 @@ import {
 
 import {
   push,
-  getIsInitalRouteResolved
+  getIsInitalRouteResolved,
+  getRouteError
 } from 'lib/index.js';
 
 router.onError(({state, dispatch}) => {
+  const routeError = getRouteError(state);
+  console.log('routeError.message = ', routeError.message);
   dispatch(push('/error'));
 });
 

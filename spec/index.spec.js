@@ -10,7 +10,8 @@ import {
   replace,
   go,
   back,
-  forward
+  forward,
+  match
 } from 'lib/index.js';
 
 describe('index', function() {
@@ -27,5 +28,6 @@ describe('index', function() {
     assert.equal(typeof go === 'function', true);
     assert.equal(typeof back === 'function', true);
     assert.equal(typeof forward === 'function', true);
+    assert.equal(typeof match === 'function', true);
   });
 });

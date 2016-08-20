@@ -4,7 +4,7 @@ import {
 
 import {
   getCurrent,
-  getRouteError
+  match
 } from 'lib/index.js';
 
 import Top from './Top.js';
@@ -14,16 +14,14 @@ import NotFound from './NotFound.js';
 import Error from './Error.js';
 
 export default inject(({state}) => {
-  const current = getCurrent(state);
-  const routeError = getRouteError(state);
-
-  if (current === '/error') {
-    return Error({error: routeError.message});
-  } else if (current === '/') {
+  const currentPath = getCurrent(state) && getCurrent(state).path;
+  if (match('/error', currentPath)) {
+    return Error({error: 'some error occurred'});
+  } else if (match('/', currentPath)) {
     return Top();
-  } else if (current === '/foo') {
+  } else if (match('/foo/:id', currentPath)) {
     return Foo();
-  } else if (current === '/bar') {
+  } else if (match('/bar', currentPath)) {
     return Bar();
   } else {
     return NotFound();
