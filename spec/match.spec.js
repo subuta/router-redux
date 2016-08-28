@@ -46,6 +46,14 @@ describe('match', function() {
     assert.equal(!!match('/', '/?sample=true'), true);
   });
 
+  it('should ignore hash string', function(){
+    assert.equal(!!match('/', '/#sample=true'), true);
+  });
+
+  it('should ignore complex hash string', function(){
+    assert.equal(!!match('/login/callback', '/login/callback#access_token=test&id_token=test.test&token_type=Bearer'), true);
+  });
+
   it('should match path syntax comparison', function(){
     assert.deepEqual(match('/user/:id', '/user/1'), { id: 1 });
   });
