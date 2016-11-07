@@ -189,10 +189,13 @@ describe('middleware', function() {
     middleware(routeChange(createRoute(transformLocationToPath(location), getQuery(location))));
 
     requestAnimationFrame(() => {
-      assert.equal(dispatch.callCount === 3, true);
+      assert.equal(dispatch.callCount === 4, true);
       assert.equal(dispatch.calledWith({
         type: ROUTE_ERROR,
         payload: true
+      }), true);
+      assert.equal(dispatch.calledWith({
+        type: INITIAL_ROUTE_RESOLVED
       }), true);
       assert.equal(dispatch.calledWith({
         type: ROUTE_CHANGE,
@@ -226,10 +229,13 @@ describe('middleware', function() {
     middleware(routeChange(createRoute(transformLocationToPath(location), getQuery(location))));
 
     requestAnimationFrame(() => {
-      assert.equal(dispatch.callCount === 3, true);
+      assert.equal(dispatch.callCount === 4, true);
       assert.equal(dispatch.calledWith({
         type: ROUTE_ERROR,
         payload: err
+      }), true);
+      assert.equal(dispatch.calledWith({
+        type: INITIAL_ROUTE_RESOLVED
       }), true);
       assert.equal(dispatch.calledWith({
         type: ROUTE_CHANGE,
@@ -257,10 +263,13 @@ describe('middleware', function() {
     middleware(routeChange(createRoute(transformLocationToPath(location), getQuery(location))));
 
     requestAnimationFrame(() => {
-      assert.equal(dispatch.callCount === 3, true);
+      assert.equal(dispatch.callCount === 4, true);
       assert.equal(dispatch.calledWith({
         type: ROUTE_ERROR,
         payload: true
+      }), true);
+      assert.equal(dispatch.calledWith({
+        type: INITIAL_ROUTE_RESOLVED
       }), true);
       assert.equal(dispatch.calledWith({
         type: ROUTE_CHANGE,
@@ -292,10 +301,13 @@ describe('middleware', function() {
     middleware(routeChange(createRoute(transformLocationToPath(location), getQuery(location))));
 
     requestAnimationFrame(() => {
-      assert.equal(dispatch.callCount === 3, true);
+      assert.equal(dispatch.callCount === 4, true);
       assert.equal(dispatch.calledWith({
         type: ROUTE_ERROR,
         payload: true
+      }), true);
+      assert.equal(dispatch.calledWith({
+        type: INITIAL_ROUTE_RESOLVED
       }), true);
       assert.equal(dispatch.calledWith({
         type: ROUTE_CHANGE,
@@ -573,10 +585,13 @@ describe('middleware', function() {
       payload: '/sample'
     });
 
-    assert.equal(dispatch.callCount === 2, true);
+    assert.equal(dispatch.callCount === 3, true);
     assert.equal(dispatch.calledWith({
       type: SET_NEXT_ROUTE,
       payload: createRoute('/sample')
+    }), true);
+    assert.equal(dispatch.calledWith({
+      type: INITIAL_ROUTE_RESOLVED
     }), true);
     assert.equal(dispatch.calledWith({
       type: ROUTE_ERROR,
