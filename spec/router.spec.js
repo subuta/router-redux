@@ -1,5 +1,7 @@
 import {
   ROUTE_CHANGE,
+  ROUTE_ERROR,
+  INITIAL_ROUTE_RESOLVED,
   transformLocationToPath,
   getQuery
 } from 'lib/actions.js';
@@ -64,7 +66,7 @@ describe('routerCreator', function() {
     }), true);
   });
 
-  it('should dispatch routeChange action on initial page load', function(done){
+  it('should dispatch routeChange action on initial page loa', function(done){
     routerCreator(store);
     assert.equal(store.dispatch.called, false);
 
