@@ -191,6 +191,7 @@ describe('middleware', function() {
           current: createRoute(transformLocationToPath(location))
         }
       });
+      cb();
     });
     router.onEnter('/sample', onEnter);
 
@@ -198,7 +199,42 @@ describe('middleware', function() {
 
     middleware(routeChange(createRoute(transformLocationToPath(location), getQuery(location))));
 
-    assert.equal(dispatch.calledTwice, true);
+    assert.equal(dispatch.calledThrice, true);
+    assert.equal(dispatch.calledWith({
+      type: INITIAL_ROUTE_RESOLVED
+    }), true);
+    assert.equal(dispatch.calledWith({
+      type: SET_NEXT_ROUTE,
+      payload: createRoute('/sample')
+    }), true);
+    assert.equal(onEnter.called, true);
+    assert.equal(location.pathname, '/sample');
+  });
+
+  it('should not call onEnter on routeChange', function(){
+    // starts with '/sample'
+    history.pushState(null, null, '/sample');
+    // restore current spy.
+    history.pushState.restore();
+
+    // try to spy one more time.
+    history.pushState = sandbox.spy(history, 'pushState');
+
+    const onEnter = sinon.spy(({state}, cb) => {
+      assert.deepEqual(state, {
+        routing: {
+          current: createRoute(transformLocationToPath(location))
+        }
+      });
+      cb();
+    });
+    router.onEnter('/sample', onEnter);
+
+    assert.equal(dispatch.called, false);
+
+    middleware(routeChange(createRoute(transformLocationToPath(location), getQuery(location))));
+
+    assert.equal(dispatch.calledThrice, true);
     assert.equal(dispatch.calledWith({
       type: INITIAL_ROUTE_RESOLVED
     }), true);
@@ -308,10 +344,7 @@ describe('middleware', function() {
       payload: '/sample'
     });
 
-    assert.equal(dispatch.calledTwice, true);
-    assert.equal(dispatch.calledWith({
-      type: INITIAL_ROUTE_RESOLVED
-    }), true);
+    assert.equal(dispatch.calledOnce, true);
     assert.equal(dispatch.calledWith({
       type: SET_NEXT_ROUTE,
       payload: createRoute('/sample')
@@ -345,10 +378,7 @@ describe('middleware', function() {
       payload: '/sample'
     });
 
-    assert.equal(dispatch.callCount === 3, true);
-    assert.equal(dispatch.calledWith({
-      type: INITIAL_ROUTE_RESOLVED
-    }), true);
+    assert.equal(dispatch.callCount === 2, true);
     assert.equal(dispatch.calledWith({
       type: SET_NEXT_ROUTE,
       payload: createRoute('/sample')
