@@ -1,11 +1,13 @@
 import {
   transformLocationToPath,
   getQuery,
+  routeChange,
   PUSH,
   REPLACE,
   GO,
   BACK,
   FORWARD,
+  ROUTE_CHANGE,
   ROUTE_ERROR,
   INITIAL_ROUTE_RESOLVED,
   SET_NEXT_ROUTE
@@ -174,6 +176,317 @@ describe('middleware', function() {
     assert.equal(dispatch.called, true);
   });
 
+  it('should put warn message on routeError if no onError handler exists.', function(done){
+    const wrappedConsole = sandbox.spy(console, 'warn');
+    const onEnter = sinon.spy(({state}, cb) => {
+      cb(false);
+    });
+
+    assert.equal(dispatch.called, false);
+
+    router.onEnter('/', onEnter);
+
+    middleware(routeChange(createRoute(transformLocationToPath(location), getQuery(location))));
+
+    requestAnimationFrame(() => {
+      assert.equal(dispatch.callCount === 4, true);
+      assert.equal(dispatch.calledWith({
+        type: ROUTE_ERROR,
+        payload: true
+      }), true);
+      assert.equal(dispatch.calledWith({
+        type: INITIAL_ROUTE_RESOLVED
+      }), true);
+      assert.equal(dispatch.calledWith({
+        type: ROUTE_CHANGE,
+        payload: createRoute(transformLocationToPath(location))
+      }), true);
+      assert.equal(onEnter.called, true);
+      assert.equal(wrappedConsole.called, true);
+      // should put warn message to console.
+      assert.equal(wrappedConsole.calledWith(
+        'You should register router.onError to handle this routing error. data =', false
+      ), true);
+      done();
+    });
+  });
+
+  it('should dispatch routeError action if callback called with Error object', function(done){
+    const err = new Error('dummy error');
+    const onEnter = sinon.spy(({state}, cb) => {
+      assert.deepEqual(state, {
+        routing: {
+          current: createRoute(transformLocationToPath(location))
+        }
+      });
+      cb(err);
+    });
+
+    assert.equal(dispatch.called, false);
+
+    router.onEnter('/', onEnter);
+
+    middleware(routeChange(createRoute(transformLocationToPath(location), getQuery(location))));
+
+    requestAnimationFrame(() => {
+      assert.equal(dispatch.callCount === 4, true);
+      assert.equal(dispatch.calledWith({
+        type: ROUTE_ERROR,
+        payload: err
+      }), true);
+      assert.equal(dispatch.calledWith({
+        type: INITIAL_ROUTE_RESOLVED
+      }), true);
+      assert.equal(dispatch.calledWith({
+        type: ROUTE_CHANGE,
+        payload: createRoute(transformLocationToPath(location))
+      }), true);
+      assert.equal(onEnter.called, true);
+      done();
+    });
+  });
+
+  it('should dispatch routeError action if callback called with falsy argument', function(done){
+    const onEnter = sinon.spy(({state}, cb) => {
+      assert.deepEqual(state, {
+        routing: {
+          current: createRoute(transformLocationToPath(location))
+        }
+      });
+      cb(false);
+    });
+
+    assert.equal(dispatch.called, false);
+
+    router.onEnter('/', onEnter);
+
+    middleware(routeChange(createRoute(transformLocationToPath(location), getQuery(location))));
+
+    requestAnimationFrame(() => {
+      assert.equal(dispatch.callCount === 4, true);
+      assert.equal(dispatch.calledWith({
+        type: ROUTE_ERROR,
+        payload: true
+      }), true);
+      assert.equal(dispatch.calledWith({
+        type: INITIAL_ROUTE_RESOLVED
+      }), true);
+      assert.equal(dispatch.calledWith({
+        type: ROUTE_CHANGE,
+        payload: createRoute(transformLocationToPath(location))
+      }), true);
+      assert.equal(onEnter.called, true);
+      done();
+    });
+  });
+
+  it('should call onError handler on routeError', function(done){
+    const onError = sinon.spy(({state}) => {
+      assert.deepEqual(state, {
+        routing: {
+          current: createRoute(transformLocationToPath(location))
+        }
+      });
+    });
+
+    const onEnter = sinon.spy(({state}, cb) => {
+      cb(false);
+    });
+
+    assert.equal(dispatch.called, false);
+
+    router.onError(onError);
+    router.onEnter('/', onEnter);
+
+    middleware(routeChange(createRoute(transformLocationToPath(location), getQuery(location))));
+
+    requestAnimationFrame(() => {
+      assert.equal(dispatch.callCount === 4, true);
+      assert.equal(dispatch.calledWith({
+        type: ROUTE_ERROR,
+        payload: true
+      }), true);
+      assert.equal(dispatch.calledWith({
+        type: INITIAL_ROUTE_RESOLVED
+      }), true);
+      assert.equal(dispatch.calledWith({
+        type: ROUTE_CHANGE,
+        payload: createRoute(transformLocationToPath(location))
+      }), true);
+      assert.equal(onEnter.called, true);
+      assert.equal(onError.called, true);
+      done();
+    });
+  });
+
+  it('should call onEnter on routeChange', function(){
+    // starts with '/sample'
+    history.pushState(null, null, '/sample');
+    // restore current spy.
+    history.pushState.restore();
+
+    // try to spy one more time.
+    history.pushState = sandbox.spy(history, 'pushState');
+
+    const onEnter = sinon.spy(({state}, cb) => {
+      assert.deepEqual(state, {
+        routing: {
+          current: createRoute(transformLocationToPath(location))
+        }
+      });
+      cb();
+    });
+    router.onEnter('/sample', onEnter);
+
+    assert.equal(dispatch.called, false);
+
+    middleware(routeChange(createRoute(transformLocationToPath(location), getQuery(location))));
+
+    assert.equal(dispatch.calledThrice, true);
+    assert.equal(dispatch.calledWith({
+      type: INITIAL_ROUTE_RESOLVED
+    }), true);
+    assert.equal(dispatch.calledWith({
+      type: SET_NEXT_ROUTE,
+      payload: createRoute('/sample')
+    }), true);
+    assert.equal(dispatch.calledWith({
+      type: ROUTE_CHANGE,
+      payload: createRoute(transformLocationToPath(location))
+    }), true);
+    assert.equal(onEnter.called, true);
+    assert.equal(location.pathname, '/sample');
+  });
+
+  it('should not dispatch initialRouteResolved action if router\'s onEnter argument omitted.', function(done){
+    const onEnter = sinon.spy(({state}) => {
+      assert.deepEqual(state, {
+        routing: {
+          current: createRoute(transformLocationToPath(location))
+        }
+      });
+    });
+
+    router.onEnter('/', onEnter);
+
+    middleware(routeChange(createRoute(transformLocationToPath(location), getQuery(location))));
+
+    requestAnimationFrame(() => {
+      assert.equal(dispatch.calledThrice, true);
+      assert.equal(dispatch.calledWith({
+        type: SET_NEXT_ROUTE,
+        payload: createRoute('/')
+      }), true);
+      assert.equal(dispatch.calledWith({
+        type: ROUTE_CHANGE,
+        payload: createRoute(transformLocationToPath(location))
+      }), true);
+      assert.equal(onEnter.called, true);
+      done();
+    });
+  });
+
+  it('should not dispatch initialRouteResolved action if router\'s onEnter not calls callback.', function(done){
+    const onEnter = sinon.spy(({state}, cb) => {
+      assert.deepEqual(state, {
+        routing: {
+          current: createRoute(transformLocationToPath(location))
+        }
+      });
+    });
+
+    router.onEnter('/', onEnter);
+
+    middleware(routeChange(createRoute(transformLocationToPath(location), getQuery(location))));
+
+    requestAnimationFrame(() => {
+      assert.equal(dispatch.calledTwice, true);
+      assert.equal(dispatch.calledWith({
+        type: SET_NEXT_ROUTE,
+        payload: createRoute('/')
+      }), true);
+      assert.equal(dispatch.calledWith({
+        type: ROUTE_CHANGE,
+        payload: createRoute(transformLocationToPath(location))
+      }), true);
+      assert.equal(onEnter.called, true);
+      done();
+    });
+  });
+
+  it('should not call onEnter on routeChange', function(){
+    // starts with '/sample'
+    history.pushState(null, null, '/sample');
+    // restore current spy.
+    history.pushState.restore();
+
+    // try to spy one more time.
+    history.pushState = sandbox.spy(history, 'pushState');
+
+    const onEnter = sinon.spy(({state}, cb) => {
+      assert.deepEqual(state, {
+        routing: {
+          current: createRoute(transformLocationToPath(location))
+        }
+      });
+      cb();
+    });
+    router.onEnter('/sample', onEnter);
+
+    assert.equal(dispatch.called, false);
+
+    middleware(routeChange(createRoute(transformLocationToPath(location), getQuery(location))));
+
+    assert.equal(dispatch.calledThrice, true);
+    assert.equal(dispatch.calledWith({
+      type: INITIAL_ROUTE_RESOLVED
+    }), true);
+    assert.equal(dispatch.calledWith({
+      type: SET_NEXT_ROUTE,
+      payload: createRoute('/sample')
+    }), true);
+    assert.equal(dispatch.calledWith({
+      type: ROUTE_CHANGE,
+      payload: createRoute(transformLocationToPath(location))
+    }), true);
+    assert.equal(onEnter.called, true);
+    assert.equal(location.pathname, '/sample');
+  });
+
+  it('should call onLeave on routeChange', function(){
+    const onLeave = sinon.spy(({state}) => {
+      assert.deepEqual(state, {
+        routing: {
+          current: createRoute(transformLocationToPath(location))
+        }
+      });
+    });
+    router.onLeave('/', onLeave);
+
+    middleware(routeChange(createRoute(transformLocationToPath(location), getQuery(location))));
+
+    // starts with '/sample'
+    history.pushState(null, null, '/sample');
+    // restore current spy.
+    history.pushState.restore();
+
+    assert.equal(dispatch.calledOnce, true);
+    assert.equal(dispatch.calledWith({
+      type: ROUTE_CHANGE,
+      payload: createRoute('/')
+    }), true);
+
+    middleware(routeChange(createRoute(transformLocationToPath(location), getQuery(location))));
+
+    assert.equal(dispatch.calledTwice, true);
+    assert.equal(dispatch.calledWith({
+      type: ROUTE_CHANGE,
+      payload: createRoute('/sample')
+    }), true);
+    assert.equal(onLeave.called, true);
+    assert.equal(location.pathname, '/sample');
+  });
+
   it('should call router\'s onEnter hook on push', function(){
     const onEnter = sinon.spy(({state}, cb) => {
       assert.deepEqual(state, {
@@ -238,10 +551,7 @@ describe('middleware', function() {
       payload: '/sample'
     });
 
-    assert.equal(dispatch.calledTwice, true);
-    assert.equal(dispatch.calledWith({
-      type: INITIAL_ROUTE_RESOLVED
-    }), true);
+    assert.equal(dispatch.calledOnce, true);
     assert.equal(dispatch.calledWith({
       type: SET_NEXT_ROUTE,
       payload: createRoute('/sample')
@@ -277,11 +587,11 @@ describe('middleware', function() {
 
     assert.equal(dispatch.callCount === 3, true);
     assert.equal(dispatch.calledWith({
-      type: INITIAL_ROUTE_RESOLVED
-    }), true);
-    assert.equal(dispatch.calledWith({
       type: SET_NEXT_ROUTE,
       payload: createRoute('/sample')
+    }), true);
+    assert.equal(dispatch.calledWith({
+      type: INITIAL_ROUTE_RESOLVED
     }), true);
     assert.equal(dispatch.calledWith({
       type: ROUTE_ERROR,
