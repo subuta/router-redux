@@ -1,11 +1,13 @@
 import {
   transformLocationToPath,
   getQuery,
+  routeChange,
   PUSH,
   REPLACE,
   GO,
   BACK,
   FORWARD,
+  ROUTE_CHANGE,
   ROUTE_ERROR,
   INITIAL_ROUTE_RESOLVED,
   SET_NEXT_ROUTE
@@ -172,6 +174,74 @@ describe('middleware', function() {
 
     assert.equal(dispatch.calledWith({}), true);
     assert.equal(dispatch.called, true);
+  });
+
+  it('should call onEnter on routeChange', function(){
+    // starts with '/sample'
+    history.pushState(null, null, '/sample');
+    // restore current spy.
+    history.pushState.restore();
+
+    // try to spy one more time.
+    history.pushState = sandbox.spy(history, 'pushState');
+
+    const onEnter = sinon.spy(({state}, cb) => {
+      assert.deepEqual(state, {
+        routing: {
+          current: createRoute(transformLocationToPath(location))
+        }
+      });
+    });
+    router.onEnter('/sample', onEnter);
+
+    assert.equal(dispatch.called, false);
+
+    middleware(routeChange(createRoute(transformLocationToPath(location), getQuery(location))));
+
+    assert.equal(dispatch.calledTwice, true);
+    assert.equal(dispatch.calledWith({
+      type: INITIAL_ROUTE_RESOLVED
+    }), true);
+    assert.equal(dispatch.calledWith({
+      type: SET_NEXT_ROUTE,
+      payload: createRoute('/sample')
+    }), true);
+    assert.equal(onEnter.called, true);
+    assert.equal(location.pathname, '/sample');
+  });
+
+  it('should call onLeave on routeChange', function(){
+    const onLeave = sinon.spy(({state}) => {
+      assert.deepEqual(state, {
+        routing: {
+          current: createRoute(transformLocationToPath(location))
+        }
+      });
+    });
+    router.onLeave('/', onLeave);
+
+    middleware(routeChange(createRoute(transformLocationToPath(location), getQuery(location))));
+
+    // starts with '/sample'
+    history.pushState(null, null, '/sample');
+    // restore current spy.
+    history.pushState.restore();
+
+    assert.equal(dispatch.calledOnce, true);
+    assert.equal(dispatch.calledWith({
+      type: ROUTE_CHANGE,
+      payload: createRoute('/')
+    }), true);
+
+    middleware(routeChange(createRoute(transformLocationToPath(location), getQuery(location))));
+
+    assert.equal(dispatch.calledTwice, true);
+    assert.equal(dispatch.calledWith({
+      type: ROUTE_CHANGE,
+      payload: createRoute('/sample')
+    }), true);
+    assert.equal(onLeave.called, true);
+    assert.equal(location.pathname, '/sample');
   });
 
   it('should call router\'s onEnter hook on push', function(){
