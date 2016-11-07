@@ -9,7 +9,8 @@ import {
   go,
   back,
   forward,
-  isHistoryAction
+  isHistoryAction,
+  isRouteAction
 } from 'lib/actions.js';
 
 describe('actions', function() {
@@ -90,6 +91,20 @@ describe('isHistoryAction', function() {
 
   it('should return false with null', function(){
     assert.equal(isHistoryAction(null), false);
+  });
+});
+
+describe('isRouteAction', function() {
+  it('should return true with valid string', function(){
+    assert.equal(isRouteAction('@@router-redux/ROUTE_CHANGE'), true);
+  });
+
+  it('should return true with invalid string', function(){
+    assert.equal(isRouteAction('@@router-redux/HISTORY_PUSH_STATE'), false);
+  });
+
+  it('should return false with null', function(){
+    assert.equal(isRouteAction(null), false);
   });
 });
 
