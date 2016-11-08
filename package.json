@@ -136,8 +136,10 @@
     "bundle": "jspm bundle example/app.js -wid",
     "unbundle": "jspm unbundle example/app.js",
     "serve": "caddy & npm run bundle",
+    "servep": "caddy --conf Caddyfilep",
     "build-dev": "jspm build lib/index.js dist/router-redux.js --format umd",
     "build": "jspm build lib/index.js dist/router-redux.js --format umd --skip-source-maps --minify",
+    "build-example": "jspm build example/app.js docs/bundled.js --format umd --skip-source-maps --minify",
     "prepublish": "npm run build"
   },
   "repository": {
