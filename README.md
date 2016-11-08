@@ -2,9 +2,11 @@
 View framework agnostic router for redux :)
 This is [react-router-redux](https://github.com/reactjs/react-router-redux) for your vdom-based project.
 
-- Make your vdom-based development flow easy.
-  - With [virtual-dom](https://github.com/Matt-Esch/virtual-dom)
-  - Or [snabbdom](https://github.com/paldepind/snabbdom)
+- Make your vdom-based development flow easy. with these libraries.
+  - ✅[vidom](https://github.com/dfilatov/vidom)
+  - ✅[snabbdom](https://github.com/paldepind/snabbdom)
+  - ✅[React](https://github.com/facebook/react)
+  - Should also work with other vdom libraries(https://github.com/Matt-Esch/virtual-dom)
 - Adds pushState/popState based client-side routing to your project.
 - Light weight(around 5K) but yet powerful router for Redux.
 
