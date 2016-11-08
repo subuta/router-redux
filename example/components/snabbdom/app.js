@@ -29,6 +29,7 @@ const render = inject(({state}) => {
 });
 
 export default () => {
+  console.log('snabbdom example loaded');
   // Patch into empty DOM element – this modifies the DOM as a side effect
   let tree = document.querySelector('#app-container'); // We need an initial tree
 

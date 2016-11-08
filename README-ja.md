@@ -1,12 +1,15 @@
 # router-redux [![Build Status](https://travis-ci.org/subuta/router-redux.svg?branch=master)](https://travis-ci.org/subuta/router-redux) [![Coverage Status](https://coveralls.io/repos/github/subuta/router-redux/badge.svg?branch=master)](https://coveralls.io/github/subuta/router-redux?branch=master)
-View framework agnostic router for redux :)
-This is [react-router-redux](https://github.com/reactjs/react-router-redux) for your vdom-based project.
+View framework agnostic [react-router-redux](https://github.com/reactjs/react-router-redux) :)
 
-- `virtual-dom`系のライブラリを利用した開発フローを簡単にします。
-    - [virtual-dom](https://github.com/Matt-Esch/virtual-dom)と使ったり
-    - [snabbdom](https://github.com/paldepind/snabbdom)する想定です。
+- [Stateless component](https://medium.com/@housecor/react-stateless-functional-components-nine-wins-you-might-have-overlooked-997b0d933dbc#.4ure2ot2k)を活用した開発フローを実現するライブラリです。以下のライブラリで動作確認済となります。
+  - ✅[React](https://github.com/facebook/react)
+  - ✅[vidom](https://github.com/dfilatov/vidom)
+  - ✅[snabbdom](https://github.com/paldepind/snabbdom)
+  - 他の`virtual-dom`系ライブラリでも、おそらく使えます(https://github.com/Matt-Esch/virtual-dom)
 - pushState/popStateを使ったクライアントサイドでのルーティングを実現します。
 - 軽量(5K以下)ですが、パワフルなRedux向けのrouterです。
+
+Demo: http://subuta.github.io/router-redux/
 
 ## Installation
 ```
@@ -81,6 +84,12 @@ router.onLeave('/', (state) => {
   console.log('[top]leave');
 });
 ```
+
+詳細なサンプルは `example/components` 配下を見てみてください。
+- `/react` -> [React](https://github.com/facebook/react) と [JSX](https://github.com/babel/babel/tree/master/packages/babel-plugin-transform-react-jsx) プラグインを使ったサンプルです。
+- `/vidom` -> [vidom](https://github.com/dfilatov/vidom) を使ったサンプルです。
+- `/snabbdom` -> [snabbdom](https://github.com/paldepind/snabbdom) を使ったサンプルです。
+- 他(`actions/reducers/store`)は共通のredux向けのファイルです。
 
 ## Documentation
 

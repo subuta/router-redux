@@ -13,6 +13,7 @@ const render = inject(({state}) => {
 });
 
 export default () => {
+  console.log('vidom example loaded');
   var container = document.querySelector('#app-container');
   const update = () => {
     container = document.querySelector('#app-container')

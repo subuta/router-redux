@@ -16,6 +16,7 @@ const render = inject(({state}) => {
 });
 
 export default () => {
+  console.log('react example loaded');
   // Patch into empty DOM element – this modifies the DOM as a side effect
   // - with diff then patch(efficient way / with vdom)
   const update = () => {
