@@ -28,25 +28,22 @@ const render = inject(({state}) => {
     ]);
 });
 
-let container = document.querySelector('#app-container');
+export default () => {
+  // Patch into empty DOM element – this modifies the DOM as a side effect
+  let tree = document.querySelector('#app-container'); // We need an initial tree
 
-// Patch into empty DOM element – this modifies the DOM as a side effect
-let tree = render(); // We need an initial tree
-patch(container, tree);
+  // - with diff then patch(efficient way / with vdom)
+  const update = () => {
+    var newTree = render();
+    patch(tree, newTree);
+    tree = newTree;
+  };
 
-// - with diff then patch(efficient way / with vdom)
-const update = () => {
-  var newTree = render();
-  patch(tree, newTree);
-  tree = newTree;
-};
+  if (document.readyState === 'complete' || document.readyState !== 'loading') {
+    update();
+  } else {
+    document.addEventListener('DOMContentLoaded', update);
+  }
 
-const unSubscribe = store.subscribe(update);
-
-export const _reload = () => {
-  update();
-};
-
-export const _unload = () => {
-  unSubscribe();
-};
+  store.subscribe(update);
+}
