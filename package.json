@@ -56,7 +56,7 @@
   },
   "name": "router-redux",
   "description": "transform route change as redux action.",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "dependencies": {},
   "devDependencies": {
     "babel-core": "^6.10.4",
