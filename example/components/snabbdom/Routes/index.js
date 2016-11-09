@@ -5,7 +5,7 @@ import {
 import {
   getCurrent,
   match
-} from 'lib/index.js';
+} from 'router-redux';
 
 import Top from './Top.js';
 import Bar from './Bar.js';

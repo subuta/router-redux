@@ -31,13 +31,17 @@ describe('reducer', function() {
 
   it('should apply routeChange to state', function(){
     history.pushState(null, null, '/sample');
-
     assert.deepEqual(reducer({
       current: '/',
       last: null
     }, {
       type: ROUTE_CHANGE,
-      payload: createRoute(transformLocationToPath(location))
+      payload: {
+        path: '/sample',
+        route: null,
+        params: null,
+        query: ''
+      }
     }), {
       current: { path: '/sample', route: null, params: null, query: '' },
       last: '/',

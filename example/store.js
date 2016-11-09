@@ -1,6 +1,6 @@
 import {createStore, applyMiddleware, compose} from 'redux';
 import injectCreator from 'redux-virtual-dom';
-import routerCreator, {routerMiddleware} from 'lib/index.js';
+import routerCreator, {routerMiddleware} from 'router-redux';
 
 import reducer from './reducers/index.js';
 const middlewares = [routerMiddleware];

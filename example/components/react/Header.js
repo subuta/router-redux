@@ -6,7 +6,7 @@ import {
 
 import {
   push
-} from 'lib/index.js';
+} from 'router-redux';
 
 export default inject(({dispatch}) => {
 

@@ -9,7 +9,7 @@ import {
   push,
   getIsInitalRouteResolved,
   getRouteError
-} from 'lib/index.js';
+} from 'router-redux';
 
 router.onError(({state, dispatch}) => {
   const routeError = getRouteError(state);
