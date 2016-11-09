@@ -159,7 +159,8 @@ export default rootReducer;
   
 #### `router.onLeave(path, handler)`
 - `handler({state, dispatch})`
-- ユーザがpushState/popStateに寄って、`path`から去った時に呼ばれます。
+- ユーザがpushState/popStateによって、`path`から去った時に呼ばれます。
+- onLeaveは `初回ページ遷移後(initialRouteResolved)` に、`path`から去ったときに呼ばれます。onLeaveが呼ばれるためには、`一度はonEnterが呼ばれている`必要があります。
 - もし`/`から`/foo/1`に遷移した場合は、`onLeave`に渡される`state.routing`は以下のようになります。 
   
 | key                    | value            |

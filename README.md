@@ -161,6 +161,7 @@ and cancel navigation. (this is useful for handling un-authorized response or Se
 #### `router.onLeave(path, handler)`
 - `handler({state, dispatch})`
 - Called when user navigated from `path` by pushState/popState
+- onLeave is called only user navigated from `path` after `initialRouteResolved`, it means you need to bind `onEnter` callback to use onLeave.
 - If you navigate to `/foo/1` from `/`, Your `state.routing` in `onLeave` function will looks like below.
   
 | Key                    | Value                 |
