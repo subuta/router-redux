@@ -1,5 +1,5 @@
 import {combineReducers} from 'redux';
-import {routerReducer} from 'lib/index.js';
+import {routerReducer} from 'router-redux';
 
 const rootReducer = combineReducers({
   routing: routerReducer
