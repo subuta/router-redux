@@ -12,6 +12,6 @@ rewrite {
 
 # otherwise prepend /example to request
 rewrite {
-  regexp (.*)
-  to /example{path} {path} /example/index.html?{query}
+  regexp /router-redux(.*)
+  to /example{1} {1} /example/index.html?{query}
 }

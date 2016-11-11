@@ -17,6 +17,7 @@ import Error from './Error.js';
 
 export default inject(({state}) => {
   const currentPath = getCurrent(state) && getCurrent(state).path;
+  console.log('currentPath = ', currentPath);
   if (match('/error', currentPath)) {
     return <Error error="some error occurred"/>;
   } else if (match('/', currentPath)) {

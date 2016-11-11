@@ -5,7 +5,9 @@ import {
   SET_NEXT_ROUTE,
   transformLocationToPath
 } from 'lib/actions.js';
+
 import reducer from 'lib/reducer.js';
+
 import {
   createRoute
 } from 'lib/router.js';

@@ -92,9 +92,9 @@ describe('middleware', function() {
       dispatch: sandbox.spy(() => {})
     };
 
-    router = routerCreator(store);
+    router = routerCreator(store, {history: createHistory()});
     dispatch = store.dispatch;
-    middleware = routerMiddlewareCreator({history: createHistory()})(store)(dispatch);
+    middleware = routerMiddleware(store)(dispatch);
 
     middleware({
       type: PUSH,
@@ -132,9 +132,9 @@ describe('middleware', function() {
       dispatch: sandbox.spy(() => {})
     };
 
-    router = routerCreator(store);
+    router = routerCreator(store, {history: createHistory({basename: '/hoge'})});
     dispatch = store.dispatch;
-    middleware = routerMiddlewareCreator({history: createHistory({basename: '/hoge'})})(store)(dispatch);
+    middleware = routerMiddleware(store)(dispatch);
 
     middleware({
       type: PUSH,
@@ -232,9 +232,9 @@ describe('middleware', function() {
       dispatch: sandbox.spy(() => {})
     };
 
-    router = routerCreator(store);
+    router = routerCreator(store, {history: createHistory()});
     dispatch = store.dispatch;
-    middleware = routerMiddlewareCreator({history: createHistory()})(store)(dispatch);
+    middleware = routerMiddleware(store)(dispatch);
 
     middleware({
       type: REPLACE,
@@ -297,6 +297,29 @@ describe('middleware', function() {
   });
 
   it('should put warn message on routeError if no onError handler exists.', function(done){
+    // starts with '/?sample=true'
+    history.pushState(null, null, '/');
+    // restore current spy.
+    history.pushState.restore();
+
+    // try to spy one more time.
+    history.pushState = sandbox.spy(history, 'pushState');
+
+    const store = {
+      getState: sandbox.spy(() => {
+        return {
+          routing: {
+            current: createRoute(transformLocationToPath(location), getQuery(location))
+          }
+        }
+      }),
+      dispatch: sandbox.spy(() => {})
+    };
+
+    router = routerCreator(store);
+    dispatch = store.dispatch;
+    middleware = routerMiddleware(store)(dispatch);
+
     const wrappedConsole = sandbox.spy(console, 'warn');
     const onEnter = sinon.spy(({state}, cb) => {
       cb(false);
