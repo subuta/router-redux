@@ -115,6 +115,33 @@ const store = createStore(reducer, compose(
 export const router = routerCreator(store);
 ```
 
+### `routerMiddlewareCreator(option)`
+you can use `routerMiddlewareCreator(option)` to customize default behavior of routeMiddleware.
+
+- `option.history`(defaults to `window.history`) to pass custom [history](https://github.com/mjackson/history)
+  - if you want to change `basename` you can do that with [this instruction](https://github.com/mjackson/history#using-a-base-url)
+
+```javascript
+// In store.js
+import routerCreator, {routerMiddlewareCreator} from 'router-redux';
+import createHistory from 'history/createBrowserHistory';
+
+import reducer from './reducers/index.js';
+
+const routerMiddleware = routerMiddlewareCreator({history: createHistory()});
+
+// or you can change basename like below
+
+// const routerMiddleware = routerMiddlewareCreator({history: createHistory({basename: '/hoge'})});
+
+const middlewares = [routerMiddleware];
+const store = createStore(reducer, compose(
+  applyMiddleware(...middlewares)
+));
+
+export const router = routerCreator(store);
+````
+
 ### `routerReducer()`
 router-redux's reducer function for redux.
 You need to register it in your `combineReducers` function.
@@ -258,7 +285,7 @@ jspm i
 caddy
 
 # Open link.
-open http://localhost:3000
+open http://localhost:3000/router-redux/
 ```
 
 ## LICENSE

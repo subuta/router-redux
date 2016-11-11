@@ -113,6 +113,33 @@ const store = createStore(reducer, compose(
 export const router = routerCreator(store);
 ```
 
+### `routerMiddlewareCreator(option)`
+`routerMiddleware`のカスタマイズ用のAPIです。`option`には以下の設定を適用する事ができます。
+
+- `option.history`(デフォルトは`window.history`) には独自の[history](https://github.com/mjackson/history)を渡すことができます。
+  - もし`basename`を変更したい場合は、この[手順]((https://github.com/mjackson/history#using-a-base-url))に従って変更することができます。
+
+```javascript
+// In store.js
+import routerCreator, {routerMiddlewareCreator} from 'router-redux';
+import createHistory from 'history/createBrowserHistory';
+
+import reducer from './reducers/index.js';
+
+const routerMiddleware = routerMiddlewareCreator({history: createHistory()});
+
+// 以下の様にoptionを指定する事で、basenameの変更が可能です。
+
+// const routerMiddleware = routerMiddlewareCreator({history: createHistory({basename: '/hoge'})});
+
+const middlewares = [routerMiddleware];
+const store = createStore(reducer, compose(
+  applyMiddleware(...middlewares)
+));
+
+export const router = routerCreator(store);
+````
+
 ### `routerReducer()`
 Redux向けのrouter-reduxのreducerです。
 このreducerは`combineReducers`関数に渡す必要があります。
@@ -258,7 +285,7 @@ jspm i
 caddy
 
 # Open link.
-open http://localhost:3000
+open http://localhost:3000/router-redux/
 ```
 
 ## LICENSE

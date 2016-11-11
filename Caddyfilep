@@ -8,12 +8,12 @@ ext .html
 #log ./access.log
 
 rewrite {
-  regexp (^/$)
+  regexp (^/router-redux/$)
   to /docs/index.html?{query}
 }
 
 # otherwise prepend public to request
 rewrite {
-  regexp (.*)
-  to /docs{path} {path} /docs/index.html?{query}
+  regexp /router-redux(.*)
+  to /docs{1} {1} /docs/index.html?{query}
 }

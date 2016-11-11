@@ -6,7 +6,7 @@ browse
 ext .html
 
 rewrite {
-  regexp (^/$)
+  regexp (^/router-redux/$)
   to /example/index.html?{query}
 }
 

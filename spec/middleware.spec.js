@@ -12,7 +12,7 @@ import {
   INITIAL_ROUTE_RESOLVED,
   SET_NEXT_ROUTE
 } from 'lib/actions.js';
-import routerMiddleware from 'lib/middleware.js';
+import routerMiddleware, {routerMiddlewareCreator} from 'lib/middleware.js';
 import routerCreator, {
   createRoute
 } from 'lib/router.js';
@@ -67,6 +67,87 @@ describe('middleware', function() {
       payload: createRoute(transformLocationToPath(location))
     }), true);
     assert.equal(history.pushState.called, true);
+    assert.equal(location.pathname, '/sample');
+  });
+
+  it('should accept push action with history library', function(){
+    const createHistory = require('history/umd/history.js').createBrowserHistory;
+
+    // starts with '/?sample=true'
+    history.pushState(null, null, '/?sample=true');
+    // restore current spy.
+    history.pushState.restore();
+
+    // try to spy one more time.
+    history.pushState = sandbox.spy(history, 'pushState');
+
+    const store = {
+      getState: sandbox.spy(() => {
+        return {
+          routing: {
+            current: createRoute(transformLocationToPath(location), getQuery(location))
+          }
+        }
+      }),
+      dispatch: sandbox.spy(() => {})
+    };
+
+    router = routerCreator(store);
+    dispatch = store.dispatch;
+    middleware = routerMiddlewareCreator({history: createHistory()})(store)(dispatch);
+
+    middleware({
+      type: PUSH,
+      payload: '/sample'
+    });
+
+    assert.equal(dispatch.called, true);
+    assert.equal(dispatch.calledWith({
+      type: PUSH,
+      payload: createRoute(transformLocationToPath(location))
+    }), true);
+    assert.equal(history.pushState.called, true);
+    assert.equal(location.pathname, '/sample');
+  });
+
+  it('should accept push action with basename of history library', function(){
+    const createHistory = require('history/umd/history.js').createBrowserHistory;
+
+    // starts with '/?sample=true'
+    history.pushState(null, null, '/?sample=true');
+    // restore current spy.
+    history.pushState.restore();
+
+    // try to spy one more time.
+    history.pushState = sandbox.spy(history, 'pushState');
+
+    const store = {
+      getState: sandbox.spy(() => {
+        return {
+          routing: {
+            current: createRoute(transformLocationToPath(location), getQuery(location))
+          }
+        }
+      }),
+      dispatch: sandbox.spy(() => {})
+    };
+
+    router = routerCreator(store);
+    dispatch = store.dispatch;
+    middleware = routerMiddlewareCreator({history: createHistory({basename: '/hoge'})})(store)(dispatch);
+
+    middleware({
+      type: PUSH,
+      payload: '/sample'
+    });
+
+    assert.equal(dispatch.called, true);
+    assert.equal(dispatch.calledWith({
+      type: PUSH,
+      payload: createRoute(transformLocationToPath(location))
+    }), true);
+    assert.equal(history.pushState.called, true);
+    assert.equal(location.pathname, '/hoge/sample');
   });
 
   it('should not accept duplicated push action', function(){
@@ -116,6 +197,45 @@ describe('middleware', function() {
   });
 
   it('should accept replace action', function(){
+    middleware({
+      type: REPLACE,
+      payload: '/sample'
+    });
+
+    assert.equal(dispatch.called, true);
+    assert.equal(dispatch.calledWith({
+      type: REPLACE,
+      payload: createRoute(transformLocationToPath(location))
+    }), true);
+    assert.equal(history.replaceState.called, true);
+  });
+
+  it('should accept push action with history library', function(){
+    const createHistory = require('history/umd/history.js').createBrowserHistory;
+
+    // starts with '/?sample=true'
+    history.pushState(null, null, '/?sample=true');
+    // restore current spy.
+    history.pushState.restore();
+
+    // try to spy one more time.
+    history.pushState = sandbox.spy(history, 'pushState');
+
+    const store = {
+      getState: sandbox.spy(() => {
+        return {
+          routing: {
+            current: createRoute(transformLocationToPath(location), getQuery(location))
+          }
+        }
+      }),
+      dispatch: sandbox.spy(() => {})
+    };
+
+    router = routerCreator(store);
+    dispatch = store.dispatch;
+    middleware = routerMiddlewareCreator({history: createHistory()})(store)(dispatch);
+
     middleware({
       type: REPLACE,
       payload: '/sample'
