@@ -6,12 +6,12 @@ browse
 ext .html
 
 rewrite {
-  regexp (^/router-redux/$)
+  regexp (^/router-redux/)
   to /example/index.html?{query}
 }
 
 # otherwise prepend /example to request
 rewrite {
-  regexp /router-redux(.*)
+  regexp /router-redux/(.*)
   to /example{1} {1} /example/index.html?{query}
 }

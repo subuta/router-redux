@@ -1,4 +1,5 @@
 import {
+  reset,
   routeChange,
   routeError,
   initialRouteResolved,
@@ -14,6 +15,12 @@ import {
 describe('actions', function() {
   beforeEach(function(){
     history.pushState(null, null, '/');
+  });
+
+  it('should create reset action', function(){
+    assert.deepEqual(reset(), {
+      type: '@@router-redux/RESET'
+    });
   });
 
   it('should create routeChange action', function(){

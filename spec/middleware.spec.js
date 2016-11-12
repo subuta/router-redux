@@ -324,7 +324,7 @@ describe('middleware', function() {
       getState: sandbox.spy(() => {
         return {
           routing: {
-            current: createRoute(location.pathname, location.search)
+            current: createRoute('/')
           }
         }
       }),

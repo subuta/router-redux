@@ -1,16 +1,12 @@
 import {
+  RESET,
   ROUTE_CHANGE,
   ROUTE_ERROR,
   INITIAL_ROUTE_RESOLVED,
-  SET_NEXT_ROUTE,
-  transformLocationToPath
+  SET_NEXT_ROUTE
 } from 'lib/actions.js';
 
 import reducer from 'lib/reducer.js';
-
-import {
-  createRoute
-} from 'lib/router.js';
 
 describe('reducer', function() {
   beforeEach(function(){
@@ -97,14 +93,16 @@ describe('reducer', function() {
       isInitialRouteResolved: true
     });
   });
-});
 
-describe('transformLocationToPath', function() {
-  beforeEach(function(){
-    history.pushState(null, null, '/');
-  });
-
-  it('should transform location to string', function(){
-    assert.equal(location.pathname, '/');
+  it('should apply reset to state', function(){
+    assert.deepEqual(reducer({}, {
+      type: RESET
+    }), {
+      current: { path: '/', route: null, params: null, query: '' },
+      last: null,
+      next: null,
+      isInitialRouteResolved: false,
+      routeError: false
+    });
   });
 });

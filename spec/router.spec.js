@@ -1,9 +1,8 @@
 import {
+  RESET,
   ROUTE_CHANGE,
   ROUTE_ERROR,
-  INITIAL_ROUTE_RESOLVED,
-  transformLocationToPath,
-  getQuery
+  INITIAL_ROUTE_RESOLVED
 } from 'lib/actions.js';
 
 import routerCreator, {
@@ -68,7 +67,20 @@ describe('routerCreator', function() {
     }), true);
   });
 
-  it('should dispatch routeChange action on initial page loa', function(done){
+  it('should dispatch reset action on initial page loading', function(done){
+    routerCreator(store);
+    assert.equal(store.dispatch.called, false);
+
+    requestAnimationFrame(() => {
+      assert.equal(store.dispatch.called, true);
+      assert.equal(store.dispatch.calledWith({
+        type: RESET
+      }), true);
+      done();
+    });
+  });
+
+  it('should dispatch routeChange action on initial page loading', function(done){
     routerCreator(store);
     assert.equal(store.dispatch.called, false);
 

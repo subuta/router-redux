@@ -1,15 +1,7 @@
 SystemJS.config({
-  browserConfig: {
-    "paths": {
-      "npm:": "/jspm_packages/npm/",
-      "router-redux/": "/lib/"
-    }
-  },
-  nodeConfig: {
-    "paths": {
-      "npm:": "jspm_packages/npm/",
-      "router-redux/": "lib/"
-    }
+  paths: {
+    "npm:": "jspm_packages/npm/",
+    "router-redux/": "lib/"
   },
   devConfig: {
     "map": {
@@ -417,6 +409,7 @@ SystemJS.config({
       "babel-plugin-transform-react-jsx"
     ]
   },
+  baseURL: "/",
   packages: {
     "router-redux": {
       "main": "index.js",
