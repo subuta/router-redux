@@ -1,2 +1,4 @@
 jspm_packages
 dist
+build.js
+build.js.map

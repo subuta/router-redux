@@ -1,15 +1,8 @@
 SystemJS.config({
-  browserConfig: {
-    "paths": {
-      "npm:": "/jspm_packages/npm/",
-      "router-redux/": "/lib/"
-    }
-  },
-  nodeConfig: {
-    "paths": {
-      "npm:": "jspm_packages/npm/",
-      "router-redux/": "lib/"
-    }
+  baseURL: "/",
+  paths: {
+    "npm:": "jspm_packages/npm/",
+    "router-redux/": "lib/"
   },
   devConfig: {
     "map": {

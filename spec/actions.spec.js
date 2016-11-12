@@ -2,8 +2,6 @@ import {
   routeChange,
   routeError,
   initialRouteResolved,
-  transformLocationToPath,
-  getQuery,
   push,
   replace,
   go,
@@ -105,35 +103,5 @@ describe('isRouteAction', function() {
 
   it('should return false with null', function(){
     assert.equal(isRouteAction(null), false);
-  });
-});
-
-describe('transformLocationToPath', function() {
-  beforeEach(function(){
-    history.pushState(null, null, '/');
-  });
-
-  it('should transform location to string', function(){
-    assert.deepEqual(transformLocationToPath(location), '/');
-  });
-
-  it('should transform location to string with query param', function(){
-    history.pushState(null, null, '/sample?hoge=true&fuga=true');
-    assert.deepEqual(transformLocationToPath(location), '/sample');
-  });
-});
-
-describe('getQuery', function() {
-  beforeEach(function(){
-    history.pushState(null, null, '/');
-  });
-
-  it('should return blank with no query param', function(){
-    assert.deepEqual(getQuery(location), '');
-  });
-
-  it('should return query string with query param', function(){
-    history.pushState(null, null, '/sample?hoge=true&fuga=true');
-    assert.deepEqual(getQuery(location), 'hoge=true&fuga=true');
   });
 });
