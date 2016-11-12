@@ -1,16 +1,23 @@
-import historyCreator, {push, replace, listen, getLocation} from 'lib/history.js';
+import historyCreator, {
+  push,
+  replace,
+  listen,
+  getLocation,
+  getPathname,
+  getQuery
+} from 'lib/history.js';
 
-describe('push', function() {
+describe('push', function () {
   let sandbox;
-  beforeEach(function(){
+  beforeEach(function () {
     sandbox = sinon.sandbox.create();
   });
 
-  afterEach(function(){
+  afterEach(function () {
     sandbox.restore();
   });
 
-  it('should call history.push if defined', function(){
+  it('should call history.push if defined', function () {
     const history = {
       push: sandbox.spy()
     }
@@ -19,7 +26,7 @@ describe('push', function() {
     assert.equal(history.push.calledWith('/'), true);
   });
 
-  it('should call history.pushState if history.push not defined', function(){
+  it('should call history.pushState if history.push not defined', function () {
     const history = {
       pushState: sandbox.spy()
     }
@@ -29,17 +36,17 @@ describe('push', function() {
   });
 });
 
-describe('replace', function() {
+describe('replace', function () {
   let sandbox;
-  beforeEach(function(){
+  beforeEach(function () {
     sandbox = sinon.sandbox.create();
   });
 
-  afterEach(function(){
+  afterEach(function () {
     sandbox.restore();
   });
 
-  it('should call history.replace if defined', function(){
+  it('should call history.replace if defined', function () {
     const history = {
       replace: sandbox.spy()
     }
@@ -48,7 +55,7 @@ describe('replace', function() {
     assert.equal(history.replace.calledWith('/'), true);
   });
 
-  it('should call history.replaceState if history.replace not defined', function(){
+  it('should call history.replaceState if history.replace not defined', function () {
     const history = {
       replaceState: sandbox.spy()
     }
@@ -58,17 +65,17 @@ describe('replace', function() {
   });
 });
 
-describe('listen', function() {
+describe('listen', function () {
   let sandbox;
-  beforeEach(function(){
+  beforeEach(function () {
     sandbox = sinon.sandbox.create();
   });
 
-  afterEach(function(){
+  afterEach(function () {
     sandbox.restore();
   });
 
-  it('should call history.listen if defined', function(){
+  it('should call history.listen if defined', function () {
     const fn = sinon.spy();
     const history = {
       listen: sandbox.spy()
@@ -80,7 +87,7 @@ describe('listen', function() {
     assert.equal(history.listen.calledWith(fn), true);
   });
 
-  it('should call window.addEventListener/removeEventListener with "popstate" event if history.listen not defined', function(){
+  it('should call window.addEventListener/removeEventListener with "popstate" event if history.listen not defined', function () {
     window.addEventListener = sandbox.spy(window, 'addEventListener');
     window.removeEventListener = sandbox.spy(window, 'removeEventListener');
     const fn = sinon.spy();
@@ -97,39 +104,20 @@ describe('listen', function() {
   });
 });
 
-describe('getLocation', function() {
+describe('historyCreator', function () {
   let sandbox;
-  beforeEach(function(){
+  beforeEach(function () {
+    // starts with '/'
+    history.pushState(null, null, '/');
+
     sandbox = sinon.sandbox.create();
   });
 
-  afterEach(function(){
+  afterEach(function () {
     sandbox.restore();
   });
 
-  it('should return history.location if isUseCustomHistory is true', function(){
-    const history = {
-      location: '/hoge'
-    }
-    assert.equal(getLocation(history, true)(), '/hoge');
-  });
-
-  it('should return window.location if isUseCustomHistory is false', function(){
-    assert.equal(getLocation(window.history, false)(), window.location);
-  });
-});
-
-describe('historyCreator', function() {
-  let sandbox;
-  beforeEach(function(){
-    sandbox = sinon.sandbox.create();
-  });
-
-  afterEach(function(){
-    sandbox.restore();
-  });
-
-  it('should return push that use passed history', function(){
+  it('should return push that use passed history', function () {
     const history = {
       push: sandbox.spy()
     }
@@ -141,7 +129,7 @@ describe('historyCreator', function() {
     assert.equal(history.push.calledWith('/'), true);
   });
 
-  it('should return push that use window.history if history not passed', function(){
+  it('should return push that use window.history if history not passed', function () {
     window.history.pushState = sandbox.spy(window.history, 'pushState');
 
     const instance = historyCreator();
@@ -151,7 +139,7 @@ describe('historyCreator', function() {
     assert.equal(window.history.pushState.calledWith(null, null, '/'), true);
   });
 
-  it('should return module that has original history API', function(){
+  it('should return module that has original history API', function () {
     const instance = historyCreator();
 
     assert.equal(typeof instance.push, 'function');
@@ -161,6 +149,10 @@ describe('historyCreator', function() {
     assert.equal(typeof instance.back, 'function');
     assert.equal(typeof instance.forward, 'function');
     assert.equal(typeof instance.forward, 'function');
+    assert.equal(typeof instance.location, 'object');
+
+    assert.equal(instance.location.pathname, '/');
+    assert.equal(instance.location.search, '');
   });
 });
 

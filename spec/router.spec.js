@@ -8,6 +8,7 @@ import {
 
 import routerCreator, {
   getRoutes,
+  getHistory,
   createRoute
 } from 'lib/router.js';
 
@@ -16,6 +17,7 @@ describe('routerCreator', function() {
   let store;
   let sandbox;
   let clock;
+  let routerHistory;
   beforeEach(function(){
     // starts with '/'
     history.pushState(null, null, '/');
@@ -62,7 +64,7 @@ describe('routerCreator', function() {
     assert.equal(store.dispatch.called, true);
     assert.equal(store.dispatch.calledWith({
       type: ROUTE_CHANGE,
-      payload: createRoute(transformLocationToPath(location))
+      payload: createRoute(location.pathname)
     }), true);
   });
 
@@ -74,7 +76,7 @@ describe('routerCreator', function() {
       assert.equal(store.dispatch.called, true);
       assert.equal(store.dispatch.calledWith({
         type: ROUTE_CHANGE,
-        payload: createRoute(transformLocationToPath(location))
+        payload: createRoute(location.pathname)
       }), true);
       done();
     });
@@ -131,12 +133,18 @@ describe('getRoutes', function() {
 });
 
 describe('createRoute', function() {
+
+  let router;
+  let location;
+
   beforeEach(function(){
     history.pushState(null, null, '/');
+    router = routerCreator({});
+    location = getHistory().getLocation()
   });
 
   it('should create route object', function(){
-    assert.deepEqual(createRoute(transformLocationToPath(location)), {
+    assert.deepEqual(createRoute(location.pathname), {
       path: '/',
       route: null,
       params: null,
@@ -146,7 +154,8 @@ describe('createRoute', function() {
 
   it('should create route object with query param', function(){
     history.pushState(null, null, '/sample?hoge=true&fuga=true');
-    assert.deepEqual(createRoute(transformLocationToPath(location), getQuery(location)), {
+    location = getHistory().getLocation()
+    assert.deepEqual(createRoute(location.pathname, location.search), {
       path: '/sample',
       route: null,
       params: null,

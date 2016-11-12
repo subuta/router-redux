@@ -21,7 +21,7 @@ describe('reducer', function() {
     // manually pass initial state to reducer,
     // because wallaby uses their internal script(/wallaby_sandbox0.html) for testing.
     const initialState = {
-      current: transformLocationToPath(location),
+      current: location.pathname,
       last: null
     };
 
@@ -105,6 +105,6 @@ describe('transformLocationToPath', function() {
   });
 
   it('should transform location to string', function(){
-    assert.equal(transformLocationToPath(location), '/');
+    assert.equal(location.pathname, '/');
   });
 });
