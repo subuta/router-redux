@@ -17,12 +17,6 @@ describe('actions', function() {
     history.pushState(null, null, '/');
   });
 
-  it('should create reset action', function(){
-    assert.deepEqual(reset(), {
-      type: '@@router-redux/RESET'
-    });
-  });
-
   it('should create routeChange action', function(){
     assert.deepEqual(routeChange(location), {
       type: '@@router-redux/ROUTE_CHANGE',

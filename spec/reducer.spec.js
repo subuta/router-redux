@@ -1,5 +1,4 @@
 import {
-  RESET,
   ROUTE_CHANGE,
   ROUTE_ERROR,
   INITIAL_ROUTE_RESOLVED,
@@ -91,18 +90,6 @@ describe('reducer', function() {
       current: '/',
       last: null,
       isInitialRouteResolved: true
-    });
-  });
-
-  it('should apply reset to state', function(){
-    assert.deepEqual(reducer({}, {
-      type: RESET
-    }), {
-      current: { path: '/', route: null, params: null, query: '' },
-      last: null,
-      next: null,
-      isInitialRouteResolved: false,
-      routeError: false
     });
   });
 });

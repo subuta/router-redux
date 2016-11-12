@@ -85,11 +85,13 @@ describe('middleware', function() {
     // try to spy one more time.
     history.pushState = sandbox.spy(history, 'pushState');
 
+    let location = routerHistory.getLocation()
+
     const store = {
       getState: sandbox.spy(() => {
         return {
           routing: {
-            current: createRoute(routerHistory.location.pathname, routerHistory.location.search)
+            current: createRoute(location.pathname, location.search)
           }
         }
       }),
@@ -105,10 +107,12 @@ describe('middleware', function() {
       payload: '/sample'
     });
 
+    location = routerHistory.getLocation()
+
     assert.equal(dispatch.called, true);
     assert.equal(dispatch.calledWith({
       type: PUSH,
-      payload: createRoute(routerHistory.location.pathname)
+      payload: createRoute(location.pathname, location.search)
     }), true);
     assert.equal(history.pushState.called, true);
     assert.equal(location.pathname, '/sample');

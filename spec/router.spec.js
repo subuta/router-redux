@@ -67,19 +67,6 @@ describe('routerCreator', function() {
     }), true);
   });
 
-  it('should dispatch reset action on initial page loading', function(done){
-    routerCreator(store);
-    assert.equal(store.dispatch.called, false);
-
-    requestAnimationFrame(() => {
-      assert.equal(store.dispatch.called, true);
-      assert.equal(store.dispatch.calledWith({
-        type: RESET
-      }), true);
-      done();
-    });
-  });
-
   it('should dispatch routeChange action on initial page loading', function(done){
     routerCreator(store);
     assert.equal(store.dispatch.called, false);

@@ -148,11 +148,7 @@ describe('historyCreator', function () {
     assert.equal(typeof instance.go, 'function');
     assert.equal(typeof instance.back, 'function');
     assert.equal(typeof instance.forward, 'function');
-    assert.equal(typeof instance.forward, 'function');
-    assert.equal(typeof instance.location, 'object');
-
-    assert.equal(instance.location.pathname, '/');
-    assert.equal(instance.location.search, '');
+    assert.equal(typeof instance.getLocation, 'function');
   });
 });
 
