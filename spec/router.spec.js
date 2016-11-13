@@ -1,4 +1,4 @@
-import { createStore } from 'redux/dist/redux.js';
+import configureStore from 'redux-mock-store';
 import routerCreator, {
   findRouteKeyByPath,
   getRoutes
@@ -10,8 +10,7 @@ describe('routerCreator', function () {
 
   beforeEach(function () {
     sandbox = sinon.sandbox.create();
-    // initialize store with dummy reducer
-    store = createStore((state, action) => state, {});
+    store = configureStore([])({});
   });
 
   it('should create router', function () {
@@ -29,8 +28,7 @@ describe('router.on', function () {
 
   beforeEach(function () {
     sandbox = sinon.sandbox.create();
-    // initialize store with dummy reducer
-    store = createStore((state, action) => state, {});
+    store = configureStore([])({});
     router = routerCreator(store);
   });
 
@@ -72,8 +70,7 @@ describe('router.render', function () {
 
   beforeEach(function () {
     sandbox = sinon.sandbox.create();
-    // initialize store with dummy reducer
-    store = createStore((state, action) => state, {
+    store = configureStore([])({
       current: {
         path: '/',
         route: '/',
@@ -81,22 +78,30 @@ describe('router.render', function () {
         query: ''
       }
     });
+    store.getState = sandbox.spy(store, 'getState');
     router = routerCreator(store);
   });
 
+  afterEach(function(){
+    sandbox.restore();
+  });
+
   it('should return correct route', function () {
+    assert.equal(store.getState.called, false);
+
     const render = sandbox.spy(() => true);
     router.on('/', render)
 
     const result = router.render();
 
     assert.equal(render.called, true);
+    // ensure render uses latest state.
+    assert.equal(store.getState.called, true);
     assert.equal(result, true)
   });
 
   it('should return correct route even if path contains path syntax', function () {
-    // initialize store with dummy reducer
-    store = createStore((state, action) => state, {
+    store = configureStore([])({
       current: {
         path: '/1',
         route: '/',
@@ -124,7 +129,7 @@ describe('findRouteKeyByPath', function () {
   beforeEach(function () {
     sandbox = sinon.sandbox.create();
     // initialize store with dummy reducer
-    store = createStore((state, action) => state, {
+    store = configureStore([])({
       current: {
         path: '/',
         route: '/',

@@ -32,7 +32,8 @@ SystemJS.config({
       "crypto": "npm:jspm-nodelibs-crypto@0.2.0",
       "string_decoder": "npm:jspm-nodelibs-string_decoder@0.2.0",
       "vm": "npm:jspm-nodelibs-vm@0.2.0",
-      "constants": "npm:jspm-nodelibs-constants@0.2.0"
+      "constants": "npm:jspm-nodelibs-constants@0.2.0",
+      "redux-mock-store": "npm:redux-mock-store@1.2.1"
     },
     "packages": {
       "npm:redux@3.6.0": {
