@@ -27,6 +27,9 @@ LOCATION_CHANGE -> history.push // navigation
 - locationの変更に応じて(history.listen)、適切なActionをstore(middleware)にdispatchする。
 - API呼び出しに応じて、適切なActionをstore(middleware)にdispatchする。
 - 現在のlocationをもとにrouteをレンダリングする。
+- onで特定のpathに対するlistenerをセットする。
+- createRouteでlocationからrouteを生成する。
+- renderで現在のrouteをもとに、適切なrenderを呼び出す。
 
 # reducerの役割
 - locationの情報を `object` として保持する。

@@ -1,5 +1,5 @@
-import match from 'lib/match.js';
-import { pathToRegex } from 'lib/match.js';
+import match from '../lib/match.js';
+import { pathToRegex } from '../lib/match.js';
 
 describe('pathToRegex', function() {
   let sandbox;
