@@ -30,6 +30,7 @@ describe('createRouter', function () {
     assert.deepEqual(getRoutes(), {});
     assert.equal(typeof router.on, 'function');
     assert.equal(typeof router.render, 'function');
+    assert.equal(typeof router.destroy, 'function');
   });
 });
 
@@ -165,6 +166,34 @@ describe('router.render', function () {
 
     assert.equal(render.called, true);
     assert.equal(result, true)
+  });
+});
+
+describe('router.destroy', function () {
+  let sandbox;
+  let store;
+  let router;
+
+  beforeEach(function () {
+    sandbox = sinon.sandbox.create();
+    store = configureStore([])({});
+    router = createRouter(store);
+  });
+
+  afterEach(function(){
+    sandbox.restore();
+  });
+
+  it('should call store\'s unsubscribe', function () {
+    store = configureStore([])({});
+    const unsubscribe = sandbox.spy();
+    store.subscribe = sandbox.spy(() => unsubscribe);
+
+    router = createRouter(store);
+    router.destroy();
+
+    assert.equal(store.subscribe.called, true);
+    assert.equal(unsubscribe.called, true);
   });
 });
 

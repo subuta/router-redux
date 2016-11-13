@@ -21,6 +21,10 @@ describe('middleware', function () {
     // initialize store with dummy reducer
     store = configureStore([ middleware ])({});
     history = window.history;
+
+    // starts with /
+    window.history.pushState(null, null, '/');
+
     history.pushState = sandbox.spy(history, 'pushState');
     history.replaceState = sandbox.spy(history, 'replaceState');
   });
@@ -35,14 +39,20 @@ describe('middleware', function () {
   });
 
   it('should accept LOCATION_CHANGE action via push', function () {
+    store.dispatch({ type: LOCATION_CHANGE, payload: { via: 'push', pathname: '/foo' } })
+    assert.deepEqual(store.getActions(), [ { type: LOCATION_CHANGE, payload: { pathname: '/foo', search: '', route: null, params: null } } ]);
+    assert.equal(history.pushState.called, true)
+  });
+
+  it('should accept LOCATION_CHANGE action via push even it has makes no path changes', function () {
     store.dispatch({ type: LOCATION_CHANGE, payload: { via: 'push', pathname: '/' } })
     assert.deepEqual(store.getActions(), [ { type: LOCATION_CHANGE, payload: { pathname: '/', search: '', route: null, params: null } } ]);
     assert.equal(history.pushState.called, true)
   });
 
   it('should accept LOCATION_CHANGE action via push', function () {
-    store.dispatch({ type: LOCATION_CHANGE, payload: { via: 'replace', pathname: '/' } })
-    assert.deepEqual(store.getActions(), [ { type: LOCATION_CHANGE, payload: { pathname: '/', search: '', route: null, params: null } } ]);
+    store.dispatch({ type: LOCATION_CHANGE, payload: { via: 'replace', pathname: '/foo' } })
+    assert.deepEqual(store.getActions(), [ { type: LOCATION_CHANGE, payload: { pathname: '/foo', search: '', route: null, params: null } } ]);
     assert.equal(history.replaceState.called, true)
   });
 });
