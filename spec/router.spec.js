@@ -1,9 +1,16 @@
 import configureStore from 'redux-mock-store';
 import createRouter, {
   findRouteKeyByPath,
+  enrichLocation,
   getRoutes,
   getHistory
 } from 'lib/router.js';
+
+import createLocation from 'lib/location.js';
+
+import {
+  LOCATION_CHANGE
+} from 'lib/actions.js';
 
 describe('createRouter', function () {
   let sandbox;
@@ -12,6 +19,10 @@ describe('createRouter', function () {
   beforeEach(function () {
     sandbox = sinon.sandbox.create();
     store = configureStore([])({});
+  });
+
+  afterEach(function(){
+    sandbox.restore();
   });
 
   it('should create router', function () {
@@ -31,6 +42,10 @@ describe('router.on', function () {
     sandbox = sinon.sandbox.create();
     store = configureStore([])({});
     router = createRouter(store);
+  });
+
+  afterEach(function(){
+    sandbox.restore();
   });
 
   it('should set route', function () {
@@ -72,11 +87,13 @@ describe('router.render', function () {
   beforeEach(function () {
     sandbox = sinon.sandbox.create();
     store = configureStore([])({
-      current: {
-        path: '/',
-        route: '/',
-        params: {},
-        query: ''
+      routing: {
+        current: {
+          path: '/',
+          route: '/',
+          params: {},
+          query: ''
+        }
       }
     });
     store.getState = sandbox.spy(store, 'getState');
@@ -101,13 +118,42 @@ describe('router.render', function () {
     assert.equal(result, true)
   });
 
+  it('should dispatch location change if current is not defined yet', function () {
+    history.pushState(null, null, '/');
+
+    store = configureStore([])({
+      routing: {
+        current: null
+      }
+    });
+    store.getState = sandbox.spy(store, 'getState');
+    router = createRouter(store);
+
+    assert.equal(store.getState.called, false);
+
+    const render = sandbox.spy();
+    router.on('/', render)
+
+    // should throw error with mockedStore
+    try {
+      router.render()
+    } catch(e) {
+      // should call location change.
+      assert.deepEqual(store.getActions(), [{type: LOCATION_CHANGE, payload: {pathname: '/', search: '', route: '/', params: {}}}])
+      // ensure render uses latest state.
+      assert.equal(store.getState.called, true);
+    }
+  });
+
   it('should return correct route even if path contains path syntax', function () {
     store = configureStore([])({
-      current: {
-        path: '/1',
-        route: '/',
-        params: {},
-        query: ''
+      routing: {
+        current: {
+          path: '/1',
+          route: '/:id',
+          params: {id: 1},
+          query: ''
+        }
       }
     });
     router = createRouter(store);
@@ -133,6 +179,10 @@ describe('getRoutes', function () {
     router = createRouter(store);
   });
 
+  afterEach(function(){
+    sandbox.restore();
+  });
+
   it('should return routes', function () {
     assert.deepEqual(getRoutes(), {});
   });
@@ -147,6 +197,10 @@ describe('getHistory', function () {
     sandbox = sinon.sandbox.create();
     store = configureStore([])({});
     router = createRouter(store);
+  });
+
+  afterEach(function(){
+    sandbox.restore();
   });
 
   it('should return history polyfill', function () {
@@ -174,6 +228,10 @@ describe('findRouteKeyByPath', function () {
     router = createRouter(store);
   });
 
+  afterEach(function(){
+    sandbox.restore();
+  });
+
   it('should return correct key', function () {
     router.on('/', sandbox.spy())
     assert.equal(findRouteKeyByPath('/'), '/');
@@ -186,5 +244,42 @@ describe('findRouteKeyByPath', function () {
   it('should return correct key even if path contains path syntax', function () {
     router.on('/:id', sandbox.spy())
     assert.equal(findRouteKeyByPath('/1'), '/:id');
+  });
+});
+
+describe('enrichLocation', function() {
+  let sandbox;
+  let store;
+  let router;
+
+  beforeEach(function () {
+    sandbox = sinon.sandbox.create();
+    // initialize store with dummy reducer
+    store = configureStore([])({});
+    router = createRouter(store);
+  });
+
+  afterEach(function(){
+    sandbox.restore();
+  });
+
+  it('should add more information to location', function(){
+    history.pushState(null, null, '/');
+    assert.deepEqual(enrichLocation(createLocation()), {
+      pathname: '/',
+      search: '',
+      route: null,
+      params: null
+    });
+  });
+
+  it('should add more information to location even if it contains query string', function(){
+    history.pushState(null, null, '/sample?hoge=true&fuga=true');
+    assert.deepEqual(enrichLocation(createLocation()), {
+      pathname: '/sample',
+      search: 'hoge=true&fuga=true',
+      route: null,
+      params: null
+    });
   });
 });

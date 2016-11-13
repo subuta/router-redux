@@ -129,28 +129,3 @@ describe('getRoutes', function() {
     assert.deepEqual(getRoutes(), {});
   });
 });
-
-describe('createRoute', function() {
-  beforeEach(function(){
-    history.pushState(null, null, '/');
-  });
-
-  it('should create route object', function(){
-    assert.deepEqual(createRoute(transformLocationToPath(location)), {
-      path: '/',
-      route: null,
-      params: null,
-      query: ''
-    });
-  });
-
-  it('should create route object with query param', function(){
-    history.pushState(null, null, '/sample?hoge=true&fuga=true');
-    assert.deepEqual(createRoute(transformLocationToPath(location), getQuery(location)), {
-      path: '/sample',
-      route: null,
-      params: null,
-      query: 'hoge=true&fuga=true'
-    });
-  });
-});
