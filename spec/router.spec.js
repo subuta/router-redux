@@ -135,15 +135,13 @@ describe('router.render', function () {
     const render = sandbox.spy();
     router.on('/', render)
 
-    // should throw error with mockedStore
-    try {
-      router.render()
-    } catch(e) {
-      // should call location change.
-      assert.deepEqual(store.getActions(), [{type: LOCATION_CHANGE, payload: {pathname: '/', search: '', route: '/', params: {}}}])
-      // ensure render uses latest state.
-      assert.equal(store.getState.called, true);
-    }
+    router.render()
+
+    // should call location change.
+    assert.deepEqual(store.getActions(), [{type: LOCATION_CHANGE, payload: {pathname: '/', search: '', route: '/', params: {}}}])
+    // ensure render uses latest state.
+    assert.equal(store.getState.called, true);
+    assert.equal(render.called, false);
   });
 
   it('should return correct route even if path contains path syntax', function () {

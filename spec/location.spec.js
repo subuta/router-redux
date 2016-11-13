@@ -1,6 +1,7 @@
-import locationCreator, {
+import createLocation, {
   getPathname,
-  getSearch
+  getSearch,
+  parseLocation
 } from 'lib/location.js';
 
 describe('getPathname', function () {
@@ -76,5 +77,24 @@ describe('getSearch', function () {
       search: '?hoge=true'
     }
     assert.equal(getSearch(location, false), 'hoge=true');
+  });
+});
+
+describe('parseLocation', function () {
+  let sandbox;
+  beforeEach(function () {
+    sandbox = sinon.sandbox.create();
+  });
+
+  afterEach(function () {
+    sandbox.restore();
+  });
+
+  it('should return location from string', function () {
+    assert.deepEqual(parseLocation('/foo'), {pathname: '/foo', search: ''});
+  });
+
+  it('should return location from string with query', function () {
+    assert.deepEqual(parseLocation('/?hoge=fuga'), {pathname: '/', search: 'hoge=fuga'});
   });
 });
