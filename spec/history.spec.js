@@ -1,10 +1,7 @@
 import historyCreator, {
   push,
   replace,
-  listen,
-  getLocation,
-  getPathname,
-  getQuery
+  listen
 } from 'lib/history.js';
 
 describe('push', function () {
