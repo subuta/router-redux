@@ -1,4 +1,4 @@
-import historyCreator, {
+import createHistory, {
   push,
   replace,
   listen
@@ -101,7 +101,7 @@ describe('listen', function () {
   });
 });
 
-describe('historyCreator', function () {
+describe('createHistory', function () {
   let sandbox;
   beforeEach(function () {
     // starts with '/'
@@ -119,7 +119,7 @@ describe('historyCreator', function () {
       push: sandbox.spy()
     }
 
-    const instance = historyCreator(history);
+    const instance = createHistory(history);
     instance.push('/')
 
     assert.equal(history.push.called, true);
@@ -129,7 +129,7 @@ describe('historyCreator', function () {
   it('should return push that use window.history if history not passed', function () {
     window.history.pushState = sandbox.spy(window.history, 'pushState');
 
-    const instance = historyCreator();
+    const instance = createHistory();
     instance.push('/')
 
     assert.equal(window.history.pushState.called, true);
@@ -137,7 +137,8 @@ describe('historyCreator', function () {
   });
 
   it('should return module that has original history API', function () {
-    const instance = historyCreator();
+    const instance = createHistory();
+    const location = instance.getLocation();
 
     assert.equal(typeof instance.push, 'function');
     assert.equal(typeof instance.replace, 'function');
@@ -145,11 +146,11 @@ describe('historyCreator', function () {
     assert.equal(typeof instance.go, 'function');
     assert.equal(typeof instance.back, 'function');
     assert.equal(typeof instance.forward, 'function');
-    assert.equal(typeof instance.forward, 'function');
-    assert.equal(typeof instance.location, 'object');
+    assert.equal(typeof instance.getLocation, 'function');
+    assert.equal(typeof location, 'object');
 
-    assert.equal(instance.location.pathname, '/');
-    assert.equal(instance.location.search, '');
+    assert.equal(location.pathname, '/');
+    assert.equal(location.search, '');
   });
 });
 

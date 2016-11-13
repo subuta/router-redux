@@ -1,10 +1,11 @@
 import configureStore from 'redux-mock-store';
-import routerCreator, {
+import createRouter, {
   findRouteKeyByPath,
-  getRoutes
+  getRoutes,
+  getHistory
 } from 'lib/router.js';
 
-describe('routerCreator', function () {
+describe('createRouter', function () {
   let sandbox;
   let store;
 
@@ -14,7 +15,7 @@ describe('routerCreator', function () {
   });
 
   it('should create router', function () {
-    const router = routerCreator(store)
+    const router = createRouter(store)
     assert.deepEqual(getRoutes(), {});
     assert.equal(typeof router.on, 'function');
     assert.equal(typeof router.render, 'function');
@@ -29,7 +30,7 @@ describe('router.on', function () {
   beforeEach(function () {
     sandbox = sinon.sandbox.create();
     store = configureStore([])({});
-    router = routerCreator(store);
+    router = createRouter(store);
   });
 
   it('should set route', function () {
@@ -79,7 +80,7 @@ describe('router.render', function () {
       }
     });
     store.getState = sandbox.spy(store, 'getState');
-    router = routerCreator(store);
+    router = createRouter(store);
   });
 
   afterEach(function(){
@@ -109,7 +110,7 @@ describe('router.render', function () {
         query: ''
       }
     });
-    router = routerCreator(store);
+    router = createRouter(store);
 
     const render = sandbox.spy(() => true);
     router.on('/:id', render)
@@ -118,6 +119,39 @@ describe('router.render', function () {
 
     assert.equal(render.called, true);
     assert.equal(result, true)
+  });
+});
+
+describe('getRoutes', function () {
+  let sandbox;
+  let store;
+  let router;
+
+  beforeEach(function () {
+    sandbox = sinon.sandbox.create();
+    store = configureStore([])({});
+    router = createRouter(store);
+  });
+
+  it('should return routes', function () {
+    assert.deepEqual(getRoutes(), {});
+  });
+});
+
+describe('getHistory', function () {
+  let sandbox;
+  let store;
+  let router;
+
+  beforeEach(function () {
+    sandbox = sinon.sandbox.create();
+    store = configureStore([])({});
+    router = createRouter(store);
+  });
+
+  it('should return history polyfill', function () {
+    const history = getHistory()
+    assert.equal(history.isPolyfill, true);
   });
 });
 
@@ -137,7 +171,7 @@ describe('findRouteKeyByPath', function () {
         query: ''
       }
     });
-    router = routerCreator(store);
+    router = createRouter(store);
   });
 
   it('should return correct key', function () {
