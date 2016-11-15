@@ -12,7 +12,9 @@ import createLocation from 'lib/location.js';
 import {
   REQUEST_LOCATION_CHANGE,
   LOCATION_CHANGE,
-  LOCATION_CHANGE_FAILURE
+  LOCATION_CHANGE_FAILURE,
+  locationChange,
+  pop
 } from 'lib/actions.js';
 
 describe('createRouter', function () {
@@ -149,6 +151,75 @@ describe('router.render', function () {
 
     // should call location change.
     assert.deepEqual(store.getActions(), [{type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}}])
+    // ensure render uses latest state.
+    assert.equal(store.getState.called, true);
+    assert.equal(render.called, false);
+  });
+
+  it('should call history.push when store is updated.', function () {
+    history.pushState(null, null, '/');
+
+    history.pushState = sandbox.spy(history, 'pushState')
+
+    store = configureStore([])({
+      routing: {
+        current: {pathname: '/foo', search: ''}
+      }
+    });
+    store.getState = sandbox.spy(store, 'getState');
+    router = createRouter(store);
+
+    assert.equal(store.getState.called, false);
+
+    const render = sandbox.spy();
+
+    assert.equal(history.pushState.called, false);
+    router.on('/', render)
+
+    router.render()
+
+    assert.equal(history.pushState.calledWith(null, null, '/foo'), true)
+
+    // should call location change.
+    assert.deepEqual(store.getActions(), [
+      {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}}
+    ])
+    // ensure render uses latest state.
+    assert.equal(store.getState.called, true);
+    assert.equal(render.called, false);
+  });
+
+  it.only('should call pop action when location is changed.', function () {
+    history.pushState(null, null, '/');
+    history.pushState(null, null, '/foo');
+
+    history.pushState = sandbox.spy(history, 'pushState')
+
+    store = configureStore([])({
+      routing: {
+        current: {pathname: '/foo', search: ''},
+        next: {pathname: '/foo', search: ''},
+        last: {pathname: '/foo', search: ''}
+      }
+    });
+    // store.getState = sandbox.spy(store, 'getState');
+    router = createRouter(store);
+
+    // assert.equal(store.getState.called, false);
+    const render = sandbox.spy();
+
+    assert.equal(history.pushState.called, false);
+    // router.on('/', render)
+
+    router.render()
+
+    const popStateEvent = new PopStateEvent('popstate');
+    window.dispatchEvent(popStateEvent);
+
+    // should call location change.
+    assert.deepEqual(store.getActions(), [
+      {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}}
+    ])
     // ensure render uses latest state.
     assert.equal(store.getState.called, true);
     assert.equal(render.called, false);

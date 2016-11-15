@@ -1,4 +1,5 @@
 import {
+  pop,
   push,
   replace,
   go,
@@ -7,6 +8,16 @@ import {
 } from 'lib/actions.js';
 
 describe('actions', function() {
+  it('should create push action', function(){
+    assert.deepEqual(pop('/'), {
+      type: '@@router-redux/REQUEST_LOCATION_CHANGE',
+      payload: {
+        via: 'pop',
+        pathname: '/'
+      }
+    });
+  });
+
   it('should create push action', function(){
     assert.deepEqual(push('/'), {
       type: '@@router-redux/REQUEST_LOCATION_CHANGE',

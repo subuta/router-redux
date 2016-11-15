@@ -1,8 +1,43 @@
 import createLocation, {
   getPathname,
   getSearch,
-  parseLocation
+  parseLocation,
+  stringifyLocation
 } from 'lib/location.js';
+
+describe('createLocation', function () {
+  let sandbox;
+  beforeEach(function () {
+    sandbox = sinon.sandbox.create();
+
+    // starts with '/'
+    window.history.pushState(null, null, '/');
+
+    // spy history methods
+    history.pushState = sandbox.spy(history, 'pushState');
+  });
+
+  afterEach(function () {
+    sandbox.restore();
+  });
+
+  it('should return location', function () {
+    const location = {
+      pathname: '/hoge'
+    }
+    assert.deepEqual(createLocation(), { pathname: '/', search: '' });
+  });
+
+  it('should return location with custom history', function () {
+    const customHistory = {
+      location: {
+        pathname: '/fuga',
+        search: ''
+      }
+    }
+    assert.deepEqual(createLocation(customHistory), { pathname: '/fuga', search: '' });
+  });
+});
 
 describe('getPathname', function () {
   let sandbox;
@@ -94,7 +129,30 @@ describe('parseLocation', function () {
     assert.deepEqual(parseLocation('/foo'), {pathname: '/foo', search: ''});
   });
 
+  it('should return blank if string is blank', function () {
+    assert.deepEqual(parseLocation('?'), {pathname: '', search: ''});
+  });
+
   it('should return location from string with query', function () {
     assert.deepEqual(parseLocation('/?hoge=fuga'), {pathname: '/', search: 'hoge=fuga'});
+  });
+});
+
+describe('stringifyLocation', function () {
+  let sandbox;
+  beforeEach(function () {
+    sandbox = sinon.sandbox.create();
+  });
+
+  afterEach(function () {
+    sandbox.restore();
+  });
+
+  it('should return string from location', function () {
+    assert.deepEqual(stringifyLocation({pathname: '/foo'}), '/foo');
+  });
+
+  it('should return string from location with query string', function () {
+    assert.deepEqual(stringifyLocation({pathname: '/foo', search: 'bar'}), '/foo?bar');
   });
 });
