@@ -39,7 +39,7 @@ export const createRoute = (path, query = '') => {
 };
 
 const routerCreator = (store) => {
-  const {dispatch, getState} = store;
+  const {dispatch} = store;
 
   // initialize routes.
   routes = {};

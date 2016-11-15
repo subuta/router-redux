@@ -2,6 +2,7 @@ import configureStore from 'redux-mock-store';
 import createRouter, {
   findRouteKeyByPath,
   enrichLocation,
+  createRouterAction,
   getRoutes,
   getHistory
 } from 'lib/router.js';
@@ -9,7 +10,9 @@ import createRouter, {
 import createLocation from 'lib/location.js';
 
 import {
-  LOCATION_CHANGE
+  REQUEST_LOCATION_CHANGE,
+  LOCATION_CHANGE,
+  LOCATION_CHANGE_FAILURE
 } from 'lib/actions.js';
 
 describe('createRouter', function () {
@@ -29,8 +32,15 @@ describe('createRouter', function () {
     const router = createRouter(store)
     assert.deepEqual(getRoutes(), {});
     assert.equal(typeof router.on, 'function');
+    assert.equal(typeof router.onError, 'function');
     assert.equal(typeof router.render, 'function');
     assert.equal(typeof router.destroy, 'function');
+    // history action
+    assert.equal(typeof router.push, 'function');
+    assert.equal(typeof router.replace, 'function');
+    assert.equal(typeof router.go, 'function');
+    assert.equal(typeof router.back, 'function');
+    assert.equal(typeof router.forward, 'function');
   });
 });
 
@@ -138,7 +148,7 @@ describe('router.render', function () {
     router.render()
 
     // should call location change.
-    assert.deepEqual(store.getActions(), [{type: LOCATION_CHANGE, payload: {pathname: '/', search: '', route: '/', params: {}}}])
+    assert.deepEqual(store.getActions(), [{type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}}])
     // ensure render uses latest state.
     assert.equal(store.getState.called, true);
     assert.equal(render.called, false);
@@ -182,16 +192,21 @@ describe('router.destroy', function () {
     sandbox.restore();
   });
 
-  it('should call store\'s unsubscribe', function () {
+  it('should call store\'s unsubscribe and history\'s unlisten.', function () {
     store = configureStore([])({});
+
     const unsubscribe = sandbox.spy();
+    const unlisten = sandbox.spy();
+
     store.subscribe = sandbox.spy(() => unsubscribe);
+    history.listen = sandbox.spy(() => unlisten);
 
     router = createRouter(store);
     router.destroy();
 
     assert.equal(store.subscribe.called, true);
-    assert.equal(unsubscribe.called, true);
+    assert.equal(unsubscribe.calledOnce, true);
+    assert.equal(unlisten.calledOnce, true);
   });
 });
 
@@ -284,6 +299,8 @@ describe('enrichLocation', function() {
     // initialize store with dummy reducer
     store = configureStore([])({});
     router = createRouter(store);
+    // starts with /
+    window.history.pushState(null, null, '/');
   });
 
   afterEach(function(){
@@ -308,5 +325,228 @@ describe('enrichLocation', function() {
       route: null,
       params: null
     });
+  });
+});
+
+describe('createRouterAction', function() {
+  let sandbox;
+  let store;
+  let router;
+
+  beforeEach(function () {
+    sandbox = sinon.sandbox.create();
+    // initialize store with dummy reducer
+    store = configureStore([])({});
+    router = createRouter(store);
+    // starts with /
+    window.history.pushState(null, null, '/');
+  });
+
+  afterEach(function(){
+    sandbox.restore();
+  });
+
+  it('should dispatch REQUEST_LOCATION_CHANGE and LOCATION_CHANGE action', function(){
+    // initialize store with dummy reducer
+    store = configureStore([])({routing: {next: {pathname: '/'}}});
+    router = createRouter(store);
+
+    const push = createRouterAction(store)('push');
+    assert.deepEqual(store.getActions(), []);
+
+    push('/');
+
+    assert.deepEqual(store.getActions(), [
+      {type: REQUEST_LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
+      {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}}
+    ]);
+  });
+
+  it('should call onLeave.', function(){
+    // initialize store with dummy reducer
+    store = configureStore([])({routing: {current: {pathname: '/', route: '/'}, next: {pathname: '/foo', route: '/foo'}}});
+    router = createRouter(store);
+
+    const onLeave = sandbox.spy();
+
+    router.on('/', {
+      render: sandbox.spy(),
+      onLeave
+    })
+
+    const push = createRouterAction(store)('push');
+    assert.deepEqual(store.getActions(), [
+      {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}}
+    ]);
+
+    push('/foo');
+
+    assert.deepEqual(store.getActions(), [
+      {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
+      {type: REQUEST_LOCATION_CHANGE, payload: {via: 'push', pathname: '/foo'}},
+      {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/foo'}}
+    ]);
+
+    assert.equal(onLeave.calledOnce, true);
+  });
+
+  it('should dispatch REQUEST_LOCATION_CHANGE and delay LOCATION_CHANGE action until onEnter\'s callback called.', function(done){
+    // initialize store with dummy reducer
+    store = configureStore([])({routing: {next: {pathname: '/', route: '/'}}});
+    router = createRouter(store);
+
+    const onEnter = sandbox.spy(({}, cb) => {
+      // before callback called.
+      assert.deepEqual(store.getActions(), [
+        {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
+        {type: REQUEST_LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}}
+      ]);
+
+      cb();
+
+      // after callback called.
+      assert.deepEqual(store.getActions(), [
+        {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
+        {type: REQUEST_LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
+        {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}}
+      ]);
+
+      done();
+    });
+
+    router.on('/', {
+      render: sandbox.spy(),
+      onEnter
+    })
+
+    const push = createRouterAction(store)('push');
+    assert.deepEqual(store.getActions(), [
+      {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}}
+    ]);
+
+    push('/');
+
+    assert.equal(onEnter.calledOnce, true);
+  });
+
+  it('should dispatch REQUEST_LOCATION_CHANGE and LOCATION_CHANGE action if onEnter\'s callback not exists.', function(){
+    // initialize store with dummy reducer
+    store = configureStore([])({routing: {next: {pathname: '/', route: '/'}}});
+    router = createRouter(store);
+
+    const onEnter = sandbox.spy();
+
+    router.on('/', {
+      render: sandbox.spy(),
+      onEnter
+    })
+
+    const push = createRouterAction(store)('push');
+    assert.deepEqual(store.getActions(), [
+      {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}}
+    ]);
+
+    push('/');
+
+    // after callback called.
+    assert.deepEqual(store.getActions(), [
+      {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
+      {type: REQUEST_LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
+      {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}}
+    ]);
+
+    assert.equal(onEnter.calledOnce, true)
+  });
+
+  it('should dispatch REQUEST_LOCATION_CHANGE and LOCATION_CHANGE_FAILURE and should call onError if error passed to cb.', function(done){
+    // initialize store with dummy reducer
+    store = configureStore([])({routing: {next: {pathname: '/', route: '/'}}});
+    router = createRouter(store);
+
+    const error = new Error('hoge');
+    const onError = sandbox.spy();
+
+    router.onError(onError);
+
+    const onEnter = sandbox.spy(({}, cb) => {
+      // before callback called.
+      assert.deepEqual(store.getActions(), [
+        {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
+        {type: REQUEST_LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}}
+      ]);
+
+      cb(error);
+
+      // after callback called.
+      assert.deepEqual(store.getActions(), [
+        {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
+        {type: REQUEST_LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
+        {type: LOCATION_CHANGE_FAILURE, payload: error}
+      ]);
+      assert.equal(onError.calledOnce, true);
+
+      done();
+    });
+
+    router.on('/', {
+      render: sandbox.spy(),
+      onEnter
+    })
+
+    const push = createRouterAction(store)('push');
+    assert.deepEqual(store.getActions(), [
+      {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}}
+    ]);
+
+    push('/');
+
+    assert.equal(onEnter.calledOnce, true)
+  });
+
+  it('should put warn message on LOCATION_CHANGE_FAILURE if no onError registered.', function(done){
+    const wrappedConsole = sandbox.spy(console, 'warn');
+
+    // initialize store with dummy reducer
+    store = configureStore([])({routing: {next: {pathname: '/', route: '/'}}});
+    router = createRouter(store);
+
+    const onEnter = sandbox.spy(({}, cb) => {
+      // before callback called.
+      assert.deepEqual(store.getActions(), [
+        {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
+        {type: REQUEST_LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}}
+      ]);
+
+      cb(false);
+
+      // after callback called.
+      assert.deepEqual(store.getActions(), [
+        {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
+        {type: REQUEST_LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
+        {type: LOCATION_CHANGE_FAILURE, payload: false}
+      ]);
+
+      assert.equal(wrappedConsole.calledOnce, true);
+      // should put warn message to console.
+      assert.equal(wrappedConsole.calledWith(
+        'You should register router.onError to handle this routing error. data =', false
+      ), true);
+
+      done();
+    });
+
+    router.on('/', {
+      render: sandbox.spy(),
+      onEnter
+    })
+
+    const push = createRouterAction(store)('push');
+    assert.deepEqual(store.getActions(), [
+      {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}}
+    ]);
+
+    push('/');
+
+    assert.equal(onEnter.calledOnce, true)
   });
 });
