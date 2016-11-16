@@ -43,6 +43,7 @@ describe('createRouter', function () {
     assert.equal(typeof router.go, 'function');
     assert.equal(typeof router.back, 'function');
     assert.equal(typeof router.forward, 'function');
+    router.destroy();
   });
 });
 
@@ -59,6 +60,7 @@ describe('router.on', function () {
 
   afterEach(function(){
     sandbox.restore();
+    router.destroy();
   });
 
   it('should set route', function () {
@@ -115,6 +117,7 @@ describe('router.render', function () {
 
   afterEach(function(){
     sandbox.restore();
+    router.destroy();
   });
 
   it('should return correct route', function () {
@@ -189,36 +192,37 @@ describe('router.render', function () {
     assert.equal(render.called, false);
   });
 
-  it.only('should call pop action when location is changed.', function () {
-    history.pushState(null, null, '/');
+  it('should call pop action when location is changed.', function () {
     history.pushState(null, null, '/foo');
 
-    history.pushState = sandbox.spy(history, 'pushState')
+    let routing = {
+      current: {pathname: '/foo', search: ''},
+      next: {pathname: '/foo', search: ''},
+      last: {pathname: '/foo', search: ''}
+    };
 
     store = configureStore([])({
-      routing: {
-        current: {pathname: '/foo', search: ''},
-        next: {pathname: '/foo', search: ''},
-        last: {pathname: '/foo', search: ''}
-      }
+      routing
     });
-    // store.getState = sandbox.spy(store, 'getState');
+    store.getState = sandbox.spy(store, 'getState');
+
     router = createRouter(store);
 
     // assert.equal(store.getState.called, false);
     const render = sandbox.spy();
 
-    assert.equal(history.pushState.called, false);
-    // router.on('/', render)
+    router.on('/', render)
 
     router.render()
 
+    history.pushState(null, null, '/');
     const popStateEvent = new PopStateEvent('popstate');
     window.dispatchEvent(popStateEvent);
 
     // should call location change.
     assert.deepEqual(store.getActions(), [
-      {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}}
+      {type: REQUEST_LOCATION_CHANGE, payload: {via: 'pop', pathname: '/'}},
+      {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/foo'}}
     ])
     // ensure render uses latest state.
     assert.equal(store.getState.called, true);
@@ -261,6 +265,7 @@ describe('router.destroy', function () {
 
   afterEach(function(){
     sandbox.restore();
+    router.destroy();
   });
 
   it('should call store\'s unsubscribe and history\'s unlisten.', function () {
@@ -294,6 +299,7 @@ describe('getRoutes', function () {
 
   afterEach(function(){
     sandbox.restore();
+    router.destroy();
   });
 
   it('should return routes', function () {
@@ -314,6 +320,7 @@ describe('getHistory', function () {
 
   afterEach(function(){
     sandbox.restore();
+    router.destroy();
   });
 
   it('should return history polyfill', function () {
@@ -343,6 +350,7 @@ describe('findRouteKeyByPath', function () {
 
   afterEach(function(){
     sandbox.restore();
+    router.destroy();
   });
 
   it('should return correct key', function () {
@@ -376,6 +384,7 @@ describe('enrichLocation', function() {
 
   afterEach(function(){
     sandbox.restore();
+    router.destroy();
   });
 
   it('should add more information to location', function(){
@@ -415,6 +424,7 @@ describe('createRouterAction', function() {
 
   afterEach(function(){
     sandbox.restore();
+    router.destroy();
   });
 
   it('should dispatch REQUEST_LOCATION_CHANGE and LOCATION_CHANGE action', function(){
