@@ -1,14 +1,19 @@
 import React from 'react'
-import {router} from 'example/store.js';
 
-router.onEnter('/foo/:id', ({state}) => {
+const onEnter = ({state}) => {
   console.log('[foo]entered', state);
-});
+};
 
-router.onLeave('/foo/:id', ({state}) => {
+const onLeave = ({state}) => {
   console.log('[foo]leave', state);
-});
+};
 
-export default () => {
+const render = () => {
   return <h1>foo</h1>;
+};
+
+export default {
+  render,
+  onEnter,
+  onLeave
 };
