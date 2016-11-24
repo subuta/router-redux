@@ -121,7 +121,7 @@ describe('router.render', function () {
   });
 
   it('should return correct route', function () {
-    assert.equal(store.getState.called, false);
+    assert.equal(store.getState.called, true);
 
     const render = sandbox.spy(() => true);
     router.on('/', render)
@@ -145,7 +145,7 @@ describe('router.render', function () {
     store.getState = sandbox.spy(store, 'getState');
     router = createRouter(store);
 
-    assert.equal(store.getState.called, false);
+    assert.equal(store.getState.called, true);
 
     const render = sandbox.spy();
     router.on('/', render)
@@ -172,7 +172,41 @@ describe('router.render', function () {
     store.getState = sandbox.spy(store, 'getState');
     router = createRouter(store);
 
-    assert.equal(store.getState.called, false);
+    assert.equal(store.getState.called, true);
+
+    const render = sandbox.spy();
+
+    assert.equal(history.pushState.called, false);
+    router.on('/', render)
+
+    router.render()
+
+    assert.equal(history.pushState.calledWith(null, null, '/foo'), true)
+
+    // should call location change.
+    assert.deepEqual(store.getActions(), [
+      {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}}
+    ])
+    // ensure render uses latest state.
+    assert.equal(store.getState.called, true);
+    assert.equal(render.called, false);
+  });
+
+  it('should call history.push when store is updated even if state not has currentState(if time-travel.)', function () {
+    history.pushState(null, null, '/');
+
+    history.pushState = sandbox.spy(history, 'pushState')
+
+    store = configureStore([])({
+      routing: {
+        current: null,
+        last: {pathname: '/foo', search: ''}
+      }
+    });
+    store.getState = sandbox.spy(store, 'getState');
+    router = createRouter(store);
+
+    assert.equal(store.getState.called, true);
 
     const render = sandbox.spy();
 
