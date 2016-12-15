@@ -31,5 +31,13 @@ LOCATION_CHANGE -> history.push // navigation
 - createRouteでlocationからrouteを生成する。
 - renderで現在のrouteをもとに、適切なrenderを呼び出す。
 
+# onEnter/onLeave
+- 次のrouteに遷移する前にHTTP Requestしたりして、データを取得し、storeにdispatchする。
+
+# Time leap
+- storeのstateの変更を再現する。
+- onEnterとかでdispatchした結果も再現される。
+- →onEnterを呼ばない。
+
 # reducerの役割
 - locationの情報を `object` として保持する。
