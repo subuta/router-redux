@@ -242,7 +242,6 @@ describe('router.render', function () {
 
     router = createRouter(store);
 
-    // assert.equal(store.getState.called, false);
     const render = sandbox.spy();
 
     router.on('/', render)
