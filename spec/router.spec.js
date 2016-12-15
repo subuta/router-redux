@@ -284,6 +284,28 @@ describe('router.render', function () {
     assert.equal(render.called, true);
     assert.equal(result, true)
   });
+
+  it('should return NotFound route if path is not matches on registered route', function () {
+    store = configureStore([])({
+      routing: {
+        current: {
+          path: '/foo',
+          route: '/foo',
+          params: {},
+          query: ''
+        }
+      }
+    });
+    router = createRouter(store);
+
+    const render = sandbox.spy(() => true);
+    router.on('*', render)
+
+    const result = router.render();
+
+    assert.equal(render.called, true);
+    assert.equal(result, true)
+  });
 });
 
 describe('router.destroy', function () {

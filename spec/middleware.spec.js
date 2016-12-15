@@ -2,7 +2,7 @@ import configureStore from 'redux-mock-store';
 import middleware from 'lib/middleware.js';
 
 import {
-  // REQUEST_LOCATION_CHANGE,
+  REQUEST_LOCATION_CHANGE,
   LOCATION_CHANGE
   // LOCATION_CHANGE_FAILURE
 } from 'lib/actions.js';
@@ -38,19 +38,25 @@ describe('middleware', function () {
     assert.deepEqual(store.getActions(), [ { type: 'dummy' } ]);
   });
 
+  it('should accept REQUEST_LOCATION_CHANGE action via push', function () {
+    store.dispatch({ type: REQUEST_LOCATION_CHANGE, payload: { via: 'push', pathname: '/foo' } })
+    assert.deepEqual(store.getActions(), [ { type: REQUEST_LOCATION_CHANGE, payload: { pathname: '/foo', search: '', route: null, params: null } } ]);
+    assert.equal(history.pushState.called, false)
+  });
+
+  it('should not accept LOCATION_CHANGE action via push if it makes no path changes', function () {
+    store.dispatch({ type: LOCATION_CHANGE, payload: { via: 'push', pathname: '/' } })
+    assert.deepEqual(store.getActions(), [ { type: LOCATION_CHANGE, payload: { pathname: '/', search: '', route: null, params: null } } ]);
+    assert.equal(history.pushState.called, false)
+  });
+
   it('should accept LOCATION_CHANGE action via push', function () {
     store.dispatch({ type: LOCATION_CHANGE, payload: { via: 'push', pathname: '/foo' } })
     assert.deepEqual(store.getActions(), [ { type: LOCATION_CHANGE, payload: { pathname: '/foo', search: '', route: null, params: null } } ]);
     assert.equal(history.pushState.called, true)
   });
 
-  it('should accept LOCATION_CHANGE action via push even it has makes no path changes', function () {
-    store.dispatch({ type: LOCATION_CHANGE, payload: { via: 'push', pathname: '/' } })
-    assert.deepEqual(store.getActions(), [ { type: LOCATION_CHANGE, payload: { pathname: '/', search: '', route: null, params: null } } ]);
-    assert.equal(history.pushState.called, true)
-  });
-
-  it('should accept LOCATION_CHANGE action via push', function () {
+  it('should accept LOCATION_CHANGE action via replace', function () {
     store.dispatch({ type: LOCATION_CHANGE, payload: { via: 'replace', pathname: '/foo' } })
     assert.deepEqual(store.getActions(), [ { type: LOCATION_CHANGE, payload: { pathname: '/foo', search: '', route: null, params: null } } ]);
     assert.equal(history.replaceState.called, true)
