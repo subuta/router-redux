@@ -16,19 +16,19 @@ import {
 //   console.log('routeError.message = ', routeError.message);
 //   dispatch(push('/error'));
 // });
-//
-// router.onEnter('/', ({state}, cb) => {
-//   console.log('[top]loading ...', state);
-//   setTimeout(() => {
-//     console.log('[top]timer fired');
-//     // cb(new Error('[top]thrown error'));
-//     cb();
-//   }, 1000);
-// });
-//
-// router.onLeave('/', ({state}) => {
-//   console.log('[top]leave');
-// });
+
+export const onEnter = ({state}, cb) => {
+  console.log('[top]loading ...', state);
+  setTimeout(() => {
+    console.log('[top]timer fired');
+    // cb(new Error('[top]thrown error'));
+    cb();
+  }, 1000);
+};
+
+export const onLeave = ({state}) => {
+  console.log('[top]leave');
+};
 
 export default inject(({state}) => {
   const isLoading = getIsLoading(state);

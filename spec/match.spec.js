@@ -11,6 +11,10 @@ describe('pathToRegex', function() {
     sandbox.restore();
   });
 
+  it('should convert simple path to pattern string', function(){
+    assert.deepEqual(pathToRegex('/'), /^\/$/);
+  });
+
   it('should convert path to pattern string', function(){
     assert.deepEqual(pathToRegex('/user'), /^\/user$/);
   });

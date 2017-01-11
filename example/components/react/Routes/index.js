@@ -9,7 +9,7 @@ import {
   match
 } from 'router-redux';
 
-import Top from './Top.js';
+import Top, {onEnter, onLeave} from './Top.js';
 import Bar from './Bar.js';
 import Foo from './Foo.js';
 import NotFound from './NotFound.js';
@@ -17,7 +17,7 @@ import Error from './Error.js';
 
 router.on('*', () => <NotFound/>)
 router.on('/error', () => <Error error="some error occurred"/>)
-router.on('/', () => <Top/>)
+router.on('/', <Top onEnter={onEnter} onLeave={onLeave}/>)
 router.on('/foo/:id', Foo)
 router.on('/bar', () => <Bar/>)
 

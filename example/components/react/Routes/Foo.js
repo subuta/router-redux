@@ -13,7 +13,7 @@ const render = () => {
 };
 
 export default {
-  render,
   onEnter,
-  onLeave
+  onLeave,
+  render
 };
