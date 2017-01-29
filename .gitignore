@@ -3,3 +3,4 @@ dist
 build.js
 build.js.map
 coverage
+jspm.karma-config.js

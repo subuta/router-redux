@@ -1,4 +1,5 @@
 SystemJS.config({
+  "baseURL": "/",
   browserConfig: {
     "paths": {
       "npm:": "/jspm_packages/npm/",
