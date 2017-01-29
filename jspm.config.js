@@ -12,6 +12,10 @@ SystemJS.config({
       "router-redux/": "lib/"
     }
   },
+  paths: {
+    "npm:": "jspm_packages/npm/",
+    "router-redux/": "lib/"
+  },
   devConfig: {
     "map": {
       "babel-preset-es2015": "npm:babel-preset-es2015@6.22.0",

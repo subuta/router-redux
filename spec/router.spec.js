@@ -254,8 +254,7 @@ describe('router.render', function () {
 
     // should call location change.
     assert.deepEqual(store.getActions(), [
-      {type: REQUEST_LOCATION_CHANGE, payload: {via: 'pop', pathname: '/'}},
-      {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/foo'}}
+      {type: REQUEST_LOCATION_CHANGE, payload: {via: 'pop', pathname: '/'}}
     ])
     // ensure render uses latest state.
     assert.equal(store.getState.called, true);
@@ -508,7 +507,7 @@ describe('createRouterAction', function() {
     router.on('/', {
       render: sandbox.spy(),
       onLeave
-    })
+    });
 
     const push = createRouterAction(store)('push');
     assert.deepEqual(store.getActions(), [
@@ -519,8 +518,7 @@ describe('createRouterAction', function() {
 
     assert.deepEqual(store.getActions(), [
       {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
-      {type: REQUEST_LOCATION_CHANGE, payload: {via: 'push', pathname: '/foo'}},
-      {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/foo'}}
+      {type: REQUEST_LOCATION_CHANGE, payload: {via: 'push', pathname: '/foo'}}
     ]);
 
     assert.equal(onLeave.calledOnce, true);
@@ -579,6 +577,7 @@ describe('createRouterAction', function() {
 
     const push = createRouterAction(store)('push');
     assert.deepEqual(store.getActions(), [
+      {type: REQUEST_LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
       {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}}
     ]);
 
@@ -586,7 +585,6 @@ describe('createRouterAction', function() {
 
     // after callback called.
     assert.deepEqual(store.getActions(), [
-      {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
       {type: REQUEST_LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
       {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}}
     ]);
@@ -607,7 +605,6 @@ describe('createRouterAction', function() {
     const onEnter = sandbox.spy(({}, cb) => {
       // before callback called.
       assert.deepEqual(store.getActions(), [
-        {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
         {type: REQUEST_LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}}
       ]);
 
@@ -615,7 +612,6 @@ describe('createRouterAction', function() {
 
       // after callback called.
       assert.deepEqual(store.getActions(), [
-        {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
         {type: REQUEST_LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
         {type: LOCATION_CHANGE_FAILURE, payload: error}
       ]);
@@ -649,7 +645,6 @@ describe('createRouterAction', function() {
     const onEnter = sandbox.spy(({}, cb) => {
       // before callback called.
       assert.deepEqual(store.getActions(), [
-        {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
         {type: REQUEST_LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}}
       ]);
 
@@ -657,7 +652,6 @@ describe('createRouterAction', function() {
 
       // after callback called.
       assert.deepEqual(store.getActions(), [
-        {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
         {type: REQUEST_LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
         {type: LOCATION_CHANGE_FAILURE, payload: false}
       ]);
