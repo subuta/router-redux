@@ -26,7 +26,7 @@ describe('createLocation', function () {
   it('should return location', function () {
     const location = {
       pathname: '/hoge'
-    }
+    };
     assert.deepEqual(createLocation(), { pathname: '/', search: '' });
   });
 

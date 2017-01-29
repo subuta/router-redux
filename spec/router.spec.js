@@ -532,7 +532,6 @@ describe('createRouterAction', function() {
     const onEnter = sandbox.spy(({}, cb) => {
       // before callback called.
       assert.deepEqual(store.getActions(), [
-        {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
         {type: REQUEST_LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}}
       ]);
 
@@ -540,7 +539,6 @@ describe('createRouterAction', function() {
 
       // after callback called.
       assert.deepEqual(store.getActions(), [
-        {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
         {type: REQUEST_LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
         {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}}
       ]);

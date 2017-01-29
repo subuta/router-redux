@@ -4,7 +4,9 @@ import {
   replace,
   go,
   back,
-  forward
+  forward,
+  locationChange,
+  locationChangeFailure
 } from 'lib/actions.js';
 
 describe('actions', function() {
@@ -63,6 +65,25 @@ describe('actions', function() {
       payload: {
         via: 'forward'
       }
+    });
+  });
+
+  it('should create location change action', function(){
+    const pathname = '/'
+    assert.deepEqual(locationChange(pathname), {
+      type: '@@router-redux/LOCATION_CHANGE',
+      payload: {
+        via: 'push',
+        pathname
+      }
+    });
+  });
+
+  it('should create location change failure action', function(){
+    const err = new Error();
+    assert.deepEqual(locationChangeFailure(err), {
+      type: '@@router-redux/LOCATION_CHANGE_FAILURE',
+      payload: err
     });
   });
 });
