@@ -1,4 +1,6 @@
-import createHistory, {
+import createHistory from 'lib/history.js';
+
+import {
   push,
   replace,
   listen

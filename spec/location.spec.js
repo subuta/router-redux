@@ -1,4 +1,6 @@
-import createLocation, {
+import createLocation from 'lib/location.js';
+
+import {
   getPathname,
   getSearch,
   parseLocation,
