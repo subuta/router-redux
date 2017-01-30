@@ -13,13 +13,12 @@ import {
   REQUEST_LOCATION_CHANGE,
   LOCATION_CHANGE,
   LOCATION_CHANGE_FAILURE,
-  locationChange,
   pop
 } from 'lib/actions.js';
 
 describe('createRouter', function () {
-  let sandbox;
-  let store;
+  var sandbox;
+  var store;
 
   beforeEach(function () {
     sandbox = sinon.sandbox.create();
@@ -48,9 +47,9 @@ describe('createRouter', function () {
 });
 
 describe('router.on', function () {
-  let sandbox;
-  let store;
-  let router;
+  var sandbox;
+  var store;
+  var router;
 
   beforeEach(function () {
     sandbox = sinon.sandbox.create();
@@ -95,9 +94,9 @@ describe('router.on', function () {
 });
 
 describe('router.render', function () {
-  let sandbox;
-  let store;
-  let router;
+  var sandbox;
+  var store;
+  var router;
 
   beforeEach(function () {
     sandbox = sinon.sandbox.create();
@@ -307,9 +306,9 @@ describe('router.render', function () {
 });
 
 describe('router.destroy', function () {
-  let sandbox;
-  let store;
-  let router;
+  var sandbox;
+  var store;
+  var router;
 
   beforeEach(function () {
     sandbox = sinon.sandbox.create();
@@ -341,9 +340,9 @@ describe('router.destroy', function () {
 });
 
 describe('getRoutes', function () {
-  let sandbox;
-  let store;
-  let router;
+  var sandbox;
+  var store;
+  var router;
 
   beforeEach(function () {
     sandbox = sinon.sandbox.create();
@@ -362,9 +361,9 @@ describe('getRoutes', function () {
 });
 
 describe('getHistory', function () {
-  let sandbox;
-  let store;
-  let router;
+  var sandbox;
+  var store;
+  var router;
 
   beforeEach(function () {
     sandbox = sinon.sandbox.create();
@@ -384,9 +383,9 @@ describe('getHistory', function () {
 });
 
 describe('findRouteKeyByPath', function () {
-  let sandbox;
-  let store;
-  let router;
+  var sandbox;
+  var store;
+  var router;
 
   beforeEach(function () {
     sandbox = sinon.sandbox.create();
@@ -423,9 +422,9 @@ describe('findRouteKeyByPath', function () {
 });
 
 describe('enrichLocation', function() {
-  let sandbox;
-  let store;
-  let router;
+  var sandbox;
+  var store;
+  var router;
 
   beforeEach(function () {
     sandbox = sinon.sandbox.create();
@@ -463,9 +462,9 @@ describe('enrichLocation', function() {
 });
 
 describe('createRouterAction', function() {
-  let sandbox;
-  let store;
-  let router;
+  var sandbox;
+  var store;
+  var router;
 
   beforeEach(function () {
     sandbox = sinon.sandbox.create();
@@ -492,8 +491,7 @@ describe('createRouterAction', function() {
     push('/');
 
     assert.deepEqual(store.getActions(), [
-      {type: REQUEST_LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
-      {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}}
+      {type: REQUEST_LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}}
     ]);
   });
 
@@ -584,10 +582,12 @@ describe('createRouterAction', function() {
     // after callback called.
     assert.deepEqual(store.getActions(), [
       {type: REQUEST_LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
+      {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
+      {type: REQUEST_LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
       {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}}
     ]);
 
-    assert.equal(onEnter.calledOnce, true)
+    assert.equal(onEnter.calledTwice, true)
   });
 
   it('should dispatch REQUEST_LOCATION_CHANGE and LOCATION_CHANGE_FAILURE and should call onError if error passed to cb.', function(done){

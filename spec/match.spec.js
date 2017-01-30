@@ -2,7 +2,7 @@ import match from '../lib/match.js';
 import { pathToRegex } from '../lib/match.js';
 
 describe('pathToRegex', function() {
-  let sandbox;
+  var sandbox;
   beforeEach(function(){
     sandbox = sinon.sandbox.create();
   });
@@ -29,7 +29,7 @@ describe('pathToRegex', function() {
 });
 
 describe('match', function() {
-  let sandbox;
+  var sandbox;
   beforeEach(function(){
     sandbox = sinon.sandbox.create();
   });

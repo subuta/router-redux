@@ -8,7 +8,7 @@ import {
 } from 'lib/location.js';
 
 describe('createLocation', function () {
-  let sandbox;
+  var sandbox;
   beforeEach(function () {
     sandbox = sinon.sandbox.create();
 
@@ -42,7 +42,7 @@ describe('createLocation', function () {
 });
 
 describe('getPathname', function () {
-  let sandbox;
+  var sandbox;
   beforeEach(function () {
     sandbox = sinon.sandbox.create();
 
@@ -80,7 +80,7 @@ describe('getPathname', function () {
 });
 
 describe('getSearch', function () {
-  let sandbox;
+  var sandbox;
   beforeEach(function () {
     sandbox = sinon.sandbox.create();
 
@@ -118,7 +118,7 @@ describe('getSearch', function () {
 });
 
 describe('parseLocation', function () {
-  let sandbox;
+  var sandbox;
   beforeEach(function () {
     sandbox = sinon.sandbox.create();
   });
@@ -141,7 +141,7 @@ describe('parseLocation', function () {
 });
 
 describe('stringifyLocation', function () {
-  let sandbox;
+  var sandbox;
   beforeEach(function () {
     sandbox = sinon.sandbox.create();
   });

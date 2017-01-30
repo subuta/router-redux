@@ -7,7 +7,7 @@ import {
 } from 'lib/history.js';
 
 describe('push', function () {
-  let sandbox;
+  var sandbox;
   beforeEach(function () {
     sandbox = sinon.sandbox.create();
   });
@@ -36,7 +36,7 @@ describe('push', function () {
 });
 
 describe('replace', function () {
-  let sandbox;
+  var sandbox;
   beforeEach(function () {
     sandbox = sinon.sandbox.create();
   });
@@ -65,7 +65,7 @@ describe('replace', function () {
 });
 
 describe('listen', function () {
-  let sandbox;
+  var sandbox;
   beforeEach(function () {
     sandbox = sinon.sandbox.create();
   });
@@ -104,7 +104,7 @@ describe('listen', function () {
 });
 
 describe('createHistory', function () {
-  let sandbox;
+  var sandbox;
   beforeEach(function () {
     // starts with '/'
     history.pushState(null, null, '/');

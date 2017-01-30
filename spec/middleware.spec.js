@@ -4,17 +4,12 @@ import middleware from 'lib/middleware.js';
 import {
   REQUEST_LOCATION_CHANGE,
   LOCATION_CHANGE
-  // LOCATION_CHANGE_FAILURE
 } from 'lib/actions.js';
 
-import {
-  enrichLocation
-} from 'lib/router.js';
-
 describe('middleware', function () {
-  let sandbox;
-  let store;
-  let history;
+  var sandbox;
+  var store;
+  var history;
 
   beforeEach(function () {
     sandbox = sinon.sandbox.create();
