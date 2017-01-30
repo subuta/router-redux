@@ -253,7 +253,8 @@ describe('router.render', function () {
 
     // should call location change.
     assert.deepEqual(store.getActions(), [
-      {type: REQUEST_LOCATION_CHANGE, payload: {via: 'pop', pathname: '/'}}
+      {type: REQUEST_LOCATION_CHANGE, payload: {via: 'pop', pathname: '/'}},
+      {type: LOCATION_CHANGE, payload: {via: 'pop', pathname: '/'}}
     ])
     // ensure render uses latest state.
     assert.equal(store.getState.called, true);
@@ -407,6 +408,19 @@ describe('findRouteKeyByPath', function () {
   });
 
   it('should return correct key', function () {
+    // work around for wallaby bug.
+    sandbox = sinon.sandbox.create();
+    // initialize store with dummy reducer
+    store = configureStore([])({
+      current: {
+        path: '/',
+        route: '/',
+        params: {},
+        query: ''
+      }
+    });
+    router = createRouter(store);
+
     router.on('/', sandbox.spy())
     assert.equal(findRouteKeyByPath('/'), '/');
   });
@@ -491,7 +505,8 @@ describe('createRouterAction', function() {
     push('/');
 
     assert.deepEqual(store.getActions(), [
-      {type: REQUEST_LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}}
+      {type: REQUEST_LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
+      {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}}
     ]);
   });
 
@@ -516,7 +531,8 @@ describe('createRouterAction', function() {
 
     assert.deepEqual(store.getActions(), [
       {type: LOCATION_CHANGE, payload: {via: 'push', pathname: '/'}},
-      {type: REQUEST_LOCATION_CHANGE, payload: {via: 'push', pathname: '/foo'}}
+      {type: REQUEST_LOCATION_CHANGE, payload: {via: 'push', pathname: '/foo'}},
+      {type: LOCATION_CHANGE, payload: { via: 'push', pathname: { pathname: '/foo', route: '/foo' } }}
     ]);
 
     assert.equal(onLeave.calledOnce, true);
