@@ -1,6 +1,5 @@
 import React from 'react'
 
-export default ({error}) => {
-  console.log('in error page !');
-  return <h1>403 Forbidden. error = {error}</h1>
+export default ({}) => {
+  return <h1>403 Forbidden. error = 'some error occured'</h1>
 };

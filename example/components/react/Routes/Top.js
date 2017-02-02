@@ -6,16 +6,15 @@ import {
 } from 'example/store.js'
 
 import {
-  push,
   getIsLoading,
   getRouteError
 } from 'router-redux';
 
-// router.onError(({state, dispatch}) => {
-//   const routeError = getRouteError(state);
-//   console.log('routeError.message = ', routeError.message);
-//   dispatch(push('/error'));
-// });
+router.onError(({state}) => {
+  const routeError = getRouteError(state);
+  console.log('routeError.message = ', routeError.message);
+  router.push('/error');
+});
 
 export const onEnter = ({state}, cb) => {
   console.log('[top]loading ...', state);
@@ -30,9 +29,10 @@ export const onLeave = ({state}) => {
   console.log('[top]leave');
 };
 
+// FIXME: isLoading=trueのときにrenderが呼ばれない
 export default inject(({state}) => {
   const isLoading = getIsLoading(state);
-  if (!isLoading) {
+  if (isLoading) {
     return <h1>loading...</h1>;
   }
   return <h1>top</h1>;
