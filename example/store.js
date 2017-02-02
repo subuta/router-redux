@@ -2,7 +2,7 @@ import {createStore, applyMiddleware, compose} from 'redux';
 import injectCreator from 'redux-virtual-dom';
 import createRouter, {routerMiddleware} from 'router-redux';
 import createHistory from 'history/createBrowserHistory'
-const history = createHistory({basename: '/react'});
+const history = createHistory({basename: '/router-redux'});
 
 import reducer from './reducers/index.js';
 const middlewares = [routerMiddleware];

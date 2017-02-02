@@ -1,29 +1,31 @@
+import h from 'snabbdom/h';
+
 import {
-  inject
+  inject,
+  router
 } from 'example/store.js'
 
 import {
+  getIsLoading,
   getCurrent,
   match
 } from 'router-redux';
 
-import Top from './Top.js';
+import Top, {onEnter, onLeave} from './Top.js';
 import Bar from './Bar.js';
 import Foo from './Foo.js';
 import NotFound from './NotFound.js';
 import Error from './Error.js';
 
+router.on('*', NotFound)
+router.on('/error', Error)
+router.on('/', {render:Top, onEnter, onLeave})
+router.on('/foo/:id', Foo)
+router.on('/bar', Bar)
+
 export default inject(({state}) => {
-  const currentPath = getCurrent(state) && getCurrent(state).path;
-  if (match('/error', currentPath)) {
-    return Error({error: 'some error occurred'});
-  } else if (match('/', currentPath)) {
-    return Top();
-  } else if (match('/foo/:id', currentPath)) {
-    return Foo();
-  } else if (match('/bar', currentPath)) {
-    return Bar();
-  } else {
-    return NotFound();
+  if (getIsLoading(state)) {
+    return h('h1', {}, 'loading ...');
   }
+  return router.render();
 });
