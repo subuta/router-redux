@@ -1,5 +1,4 @@
 import h from 'snabbdom/h';
-
 import {router} from 'example/store.js';
 
 import {
