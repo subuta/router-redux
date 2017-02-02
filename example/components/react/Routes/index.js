@@ -1,10 +1,12 @@
 import React from 'react'
 
 import {
+  inject,
   router
 } from 'example/store.js'
 
 import {
+  getIsLoading,
   getCurrent,
   match
 } from 'router-redux';
@@ -21,6 +23,9 @@ router.on('/', <Top onEnter={onEnter} onLeave={onLeave}/>)
 router.on('/foo/:id', Foo)
 router.on('/bar', () => <Bar/>)
 
-export default () => {
+export default inject(({state}) => {
+  if (getIsLoading(state)) {
+    return <h1>loading ...</h1>
+  }
   return router.render();
-};
+});

@@ -2,11 +2,6 @@ import React from 'react'
 import {router} from 'example/store.js';
 
 import {
-  inject
-} from 'example/store.js'
-
-import {
-  getIsLoading,
   getRouteError
 } from 'router-redux';
 
@@ -29,11 +24,6 @@ export const onLeave = ({state}) => {
   console.log('[top]leave');
 };
 
-// FIXME: isLoading=trueのときにrenderが呼ばれない
-export default inject(({state}) => {
-  const isLoading = getIsLoading(state);
-  if (isLoading) {
-    return <h1>loading...</h1>;
-  }
+export default () => {
   return <h1>top</h1>;
-});
+}

@@ -1,5 +1,9 @@
 import React from 'react'
 
+import {
+  getIsLoading
+} from 'router-redux';
+
 const onEnter = ({state}) => {
   console.log('[foo]entered', state);
 };
