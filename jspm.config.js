@@ -49,7 +49,8 @@ SystemJS.config({
       "url": "npm:jspm-nodelibs-url@0.2.0",
       "https": "npm:jspm-nodelibs-https@0.2.1",
       "snabbdom": "npm:snabbdom@0.5.4",
-      "string_decoder": "npm:jspm-nodelibs-string_decoder@0.2.0"
+      "string_decoder": "npm:jspm-nodelibs-string_decoder@0.2.0",
+      "history": "npm:history@4.5.1"
     },
     "packages": {
       "npm:redux@3.6.0": {
@@ -188,7 +189,7 @@ SystemJS.config({
       },
       "npm:loose-envify@1.3.1": {
         "map": {
-          "js-tokens": "npm:js-tokens@3.0.0"
+          "js-tokens": "npm:js-tokens@3.0.1"
         }
       },
       "npm:stream-http@2.6.3": {
@@ -816,6 +817,20 @@ SystemJS.config({
       "npm:strip-ansi@3.0.1": {
         "map": {
           "ansi-regex": "npm:ansi-regex@2.1.1"
+        }
+      },
+      "npm:history@4.5.1": {
+        "map": {
+          "invariant": "npm:invariant@2.2.2",
+          "loose-envify": "npm:loose-envify@1.3.1",
+          "warning": "npm:warning@3.0.0",
+          "value-equal": "npm:value-equal@0.2.0",
+          "resolve-pathname": "npm:resolve-pathname@2.0.2"
+        }
+      },
+      "npm:warning@3.0.0": {
+        "map": {
+          "loose-envify": "npm:loose-envify@1.3.1"
         }
       }
     }
