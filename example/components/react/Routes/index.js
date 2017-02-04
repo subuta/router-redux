@@ -6,9 +6,7 @@ import {
 } from 'example/store.js'
 
 import {
-  getIsLoading,
-  getCurrent,
-  match
+  getIsLoading
 } from 'router-redux';
 
 import Top, {onEnter, onLeave} from './Top.js';
