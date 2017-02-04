@@ -4,7 +4,7 @@ import {
   getLast,
   getNext,
   getRouteError,
-  getIsLoading
+  getIsInitalRouteResolved
 } from 'lib/selector.js';
 
 describe('hasRouting', function() {
@@ -38,7 +38,7 @@ describe('selectors', function() {
     assert.equal(getRouteError({routing: {routeError: true}}), true);
   });
 
-  it('should return isLoading from the state', function(){
-    assert.equal(getIsLoading({routing: {isLoading: true}}), true);
+  it('should return isInitialRouteResolved from the state', function(){
+    assert.equal(getIsInitalRouteResolved({routing: {isInitialRouteResolved: true}}), true);
   });
 });

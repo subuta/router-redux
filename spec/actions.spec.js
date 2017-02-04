@@ -1,139 +1,89 @@
 import {
-  routeChange,
-  routeError,
-  initialRouteResolved,
-  transformLocationToPath,
-  getQuery,
+  pop,
   push,
   replace,
   go,
   back,
   forward,
-  isHistoryAction,
-  isRouteAction
+  locationChange,
+  locationChangeFailure
 } from 'lib/actions.js';
 
 describe('actions', function() {
-  beforeEach(function(){
-    history.pushState(null, null, '/');
-  });
-
-  it('should create routeChange action', function(){
-    assert.deepEqual(routeChange(location), {
-      type: '@@router-redux/ROUTE_CHANGE',
-      payload: location
-    });
-  });
-
-  it('should create routeError action', function(){
-    const err = new Error('dummy error');
-    assert.deepEqual(routeError(err), {
-      type: '@@router-redux/ROUTE_ERROR',
-      payload: err
-    });
-  });
-
-  it('should create routeError action with falsy value', function(){
-    assert.deepEqual(routeError(false), {
-      type: '@@router-redux/ROUTE_ERROR',
-      payload: true
-    });
-  });
-
-  it('should create initialRouteResolved action', function(){
-    assert.deepEqual(initialRouteResolved(), {
-      type: '@@router-redux/INITIAL_ROUTE_RESOLVED'
+  it('should create push action', function(){
+    assert.deepEqual(pop('/'), {
+      type: '@@router-redux/REQUEST_LOCATION_CHANGE',
+      payload: {
+        via: 'pop',
+        pathname: '/'
+      }
     });
   });
 
   it('should create push action', function(){
-    assert.deepEqual(push('/sample'), {
-      type: '@@router-redux/HISTORY_PUSH_STATE',
-      payload: '/sample'
+    assert.deepEqual(push('/'), {
+      type: '@@router-redux/REQUEST_LOCATION_CHANGE',
+      payload: {
+        via: 'push',
+        pathname: '/'
+      }
     });
   });
 
   it('should create replace action', function(){
-    assert.deepEqual(replace('/sample'), {
-      type: '@@router-redux/HISTORY_REPLACE_STATE',
-      payload: '/sample'
+    assert.deepEqual(replace('/'), {
+      type: '@@router-redux/REQUEST_LOCATION_CHANGE',
+      payload: {
+        via: 'replace',
+        pathname: '/'
+      }
     });
   });
 
   it('should create go action', function(){
     assert.deepEqual(go(1), {
-      type: '@@router-redux/HISTORY_GO',
-      payload: 1
+      type: '@@router-redux/REQUEST_LOCATION_CHANGE',
+      payload: {
+        via: 'go',
+        point: 1
+      }
     });
   });
 
   it('should create back action', function(){
     assert.deepEqual(back(), {
-      type: '@@router-redux/HISTORY_BACK'
+      type: '@@router-redux/REQUEST_LOCATION_CHANGE',
+      payload: {
+        via: 'back'
+      }
     });
   });
 
   it('should create forward action', function(){
     assert.deepEqual(forward(), {
-      type: '@@router-redux/HISTORY_FORWARD'
+      type: '@@router-redux/REQUEST_LOCATION_CHANGE',
+      payload: {
+        via: 'forward'
+      }
     });
   });
-});
 
-describe('isHistoryAction', function() {
-  it('should return true with valid string', function(){
-    assert.equal(isHistoryAction('@@router-redux/HISTORY_PUSH_STATE'), true);
+  it('should create location change action', function(){
+    const pathname = '/'
+    assert.deepEqual(locationChange(pathname), {
+      type: '@@router-redux/LOCATION_CHANGE',
+      payload: {
+        via: 'push',
+        pathname
+      }
+    });
   });
 
-  it('should return true with invalid string', function(){
-    assert.equal(isHistoryAction('@@router-redux/ROUTE_CHANGE'), false);
-  });
-
-  it('should return false with null', function(){
-    assert.equal(isHistoryAction(null), false);
-  });
-});
-
-describe('isRouteAction', function() {
-  it('should return true with valid string', function(){
-    assert.equal(isRouteAction('@@router-redux/ROUTE_CHANGE'), true);
-  });
-
-  it('should return true with invalid string', function(){
-    assert.equal(isRouteAction('@@router-redux/HISTORY_PUSH_STATE'), false);
-  });
-
-  it('should return false with null', function(){
-    assert.equal(isRouteAction(null), false);
-  });
-});
-
-describe('transformLocationToPath', function() {
-  beforeEach(function(){
-    history.pushState(null, null, '/');
-  });
-
-  it('should transform location to string', function(){
-    assert.deepEqual(transformLocationToPath(location), '/');
-  });
-
-  it('should transform location to string with query param', function(){
-    history.pushState(null, null, '/sample?hoge=true&fuga=true');
-    assert.deepEqual(transformLocationToPath(location), '/sample');
-  });
-});
-
-describe('getQuery', function() {
-  beforeEach(function(){
-    history.pushState(null, null, '/');
-  });
-
-  it('should return blank with no query param', function(){
-    assert.deepEqual(getQuery(location), '');
-  });
-
-  it('should return query string with query param', function(){
-    history.pushState(null, null, '/sample?hoge=true&fuga=true');
-    assert.deepEqual(getQuery(location), 'hoge=true&fuga=true');
+  it('should create location change failure action', function(){
+    const err = new Error();
+    assert.deepEqual(locationChangeFailure(err), {
+      type: '@@router-redux/LOCATION_CHANGE_FAILURE',
+      payload: err
+    });
   });
 });

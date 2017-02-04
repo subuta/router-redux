@@ -4,8 +4,6 @@ localhost:3000
 gzip
 browse
 ext .html
-#log / stdout "{method} {uri} {latency}"
-#log ./access.log
 
 rewrite {
   regexp (^/$)

@@ -1,108 +1,96 @@
 import {
-  ROUTE_CHANGE,
-  ROUTE_ERROR,
-  INITIAL_ROUTE_RESOLVED,
-  SET_NEXT_ROUTE,
-  transformLocationToPath
+  REQUEST_LOCATION_CHANGE,
+  LOCATION_CHANGE,
+  LOCATION_CHANGE_FAILURE
 } from 'lib/actions.js';
+
 import reducer from 'lib/reducer.js';
-import {
-  createRoute
-} from 'lib/router.js';
 
 describe('reducer', function() {
   beforeEach(function(){
-    history.pushState(null, null, '/');
   });
 
   it('should return initial state', function(){
-    // manually pass initial state to reducer,
-    // because wallaby uses their internal script(/wallaby_sandbox0.html) for testing.
     const initialState = {
-      current: transformLocationToPath(location),
-      last: null
+      current: null,
+      next: null,
+      last: null,
+      routeError: null,
+      isLoading: false
+    };
+    assert.deepEqual(reducer(initialState, {}), {
+      current: null,
+      next: null,
+      last: null,
+      routeError: null,
+      isLoading: false
+    });
+  });
+
+  it('should accept REQUEST_LOCATION_CHANGE', function(){
+    const initialState = {
+      current: {pathname: '/'},
+      next: null,
+      last: null,
+      routeError: null,
+      isLoading: false
     };
 
-    assert.deepEqual(reducer(initialState, {}), {
-      current: '/',
-      last: null
-    });
-  });
-
-  it('should apply routeChange to state', function(){
-    history.pushState(null, null, '/sample');
-    assert.deepEqual(reducer({
-      current: '/',
-      last: null
-    }, {
-      type: ROUTE_CHANGE,
-      payload: {
-        path: '/sample',
-        route: null,
-        params: null,
-        query: ''
-      }
-    }), {
-      current: { path: '/sample', route: null, params: null, query: '' },
-      last: '/',
-      next: null,
-      routeError: null
-    });
-  });
-
-  it('should apply routeError to state', function(){
-    assert.deepEqual(reducer({
-      current: '/',
+    // should apply these changes
+    // 1. put new payload to next
+    // 2. make isLoading true
+    assert.deepEqual(reducer(initialState, {type: REQUEST_LOCATION_CHANGE, payload: {pathname: '/foo'}}), {
+      current: {pathname: '/'},
+      next: {pathname: '/foo'},
       last: null,
-      routeError: false
-    }, {
-      type: ROUTE_ERROR,
-      payload: true
-    }), {
-      current: '/',
+      routeError: null,
+      isLoading: true
+    });
+  });
+
+  it('should accept LOCATION_CHANGE', function(){
+    const initialState = {
+      current: {pathname: '/'},
+      next: true,
       last: null,
       routeError: true,
-      next: null
+      isLoading: true
+    };
+
+    // should apply these changes
+    // 1. move current to last
+    // 2. put new payload to current
+    // 3. set null to next/routeError
+    // 4. make isLoading false
+    assert.deepEqual(reducer(initialState, {type: LOCATION_CHANGE, payload: {pathname: '/foo'}}), {
+      current: {pathname: '/foo'},
+      next: null,
+      last: {pathname: '/'},
+      routeError: null,
+      isLoading: false
     });
   });
 
-  it('should apply setNextRoute to state', function(){
-    assert.deepEqual(reducer({
-      current: '/',
+  it('should accept LOCATION_CHANGE_FAILURE', function(){
+    const initialState = {
+      current: {pathname: '/'},
+      next: true,
       last: null,
-      routeError: false
-    }, {
-      type: SET_NEXT_ROUTE,
-      payload: true
-    }), {
-      current: '/',
+      routeError: null,
+      isLoading: true
+    };
+
+    const error = new Error('dummy error');
+
+    // should apply these changes
+    // 1. put new payload to next
+    // 2. make isLoading false
+    assert.deepEqual(reducer(initialState, {type: LOCATION_CHANGE_FAILURE, payload: error}), {
+      current: {pathname: '/'},
+      next: null,
       last: null,
-      routeError: false,
-      next: true
+      routeError: error,
+      isLoading: false
     });
-  });
-
-  it('should apply initialRouteResolved to state', function(){
-    assert.deepEqual(reducer({
-      current: '/',
-      last: null,
-      isInitialRouteResolved: false
-    }, {
-      type: INITIAL_ROUTE_RESOLVED
-    }), {
-      current: '/',
-      last: null,
-      isInitialRouteResolved: true
-    });
-  });
-});
-
-describe('transformLocationToPath', function() {
-  beforeEach(function(){
-    history.pushState(null, null, '/');
-  });
-
-  it('should transform location to string', function(){
-    assert.equal(transformLocationToPath(location), '/');
   });
 });

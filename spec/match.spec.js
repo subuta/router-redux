@@ -1,14 +1,18 @@
-import match from 'lib/match.js';
-import { pathToRegex } from 'lib/match.js';
+import match from '../lib/match.js';
+import { pathToRegex } from '../lib/match.js';
 
 describe('pathToRegex', function() {
-  let sandbox;
+  var sandbox;
   beforeEach(function(){
     sandbox = sinon.sandbox.create();
   });
 
   afterEach(function(){
     sandbox.restore();
+  });
+
+  it('should convert simple path to pattern string', function(){
+    assert.deepEqual(pathToRegex('/'), /^\/$/);
   });
 
   it('should convert path to pattern string', function(){
@@ -25,7 +29,7 @@ describe('pathToRegex', function() {
 });
 
 describe('match', function() {
-  let sandbox;
+  var sandbox;
   beforeEach(function(){
     sandbox = sinon.sandbox.create();
   });

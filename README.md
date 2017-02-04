@@ -7,11 +7,9 @@ View framework agnostic [react-router-redux](https://github.com/reactjs/react-ro
   - ✅[snabbdom](https://github.com/paldepind/snabbdom)
   - Should also work with other vdom libraries(https://github.com/Matt-Esch/virtual-dom)
 - Adds pushState/popState based client-side routing to your project.
-- Light weight(around 5K) but yet powerful router for Redux.
+- Light weight(around 7K) but yet powerful router for Redux.
 
 Demo: http://subuta.github.io/router-redux/
-
-[README - 日本語版](README-ja.md)
 
 ## Installation
 ```
@@ -34,11 +32,11 @@ export default rootReducer;
 ```
 
 Next you need to pass `routerMiddleware` to your `createStore` function. 
-Then create and export `router` using `routerCreator`.
+Then create and export `router`.
  
 ```javascript
 // In example/store.js
-import routerCreator, {routerMiddleware} from 'router-redux';
+import createRouter, {routerMiddleware} from 'router-redux';
 
 import reducer from './reducers/index.js';
 const middlewares = [routerMiddleware];
@@ -46,30 +44,31 @@ const store = createStore(reducer, compose(
   applyMiddleware(...middlewares)
 ));
 
-export const router = routerCreator(store);
+export const router = createRouter(store);
 ```
 
 Then `router` enables you to pushState/popState based routing with redux.
 
 ```javascript
 // Get your exported router
-import {router} from 'example/store.js';
+import {router} from 'example/store.js';}
 
-// Get router action/selector from router-redux
+// Get router selector from router-redux
 import {
-  push,
-  getCurrent
+  getRouteError
 } from 'router-redux';
 
-// Register onError first (if you need to catch initialRouting error)
+// Register onError first (if you need to catch routing error)
 router.onError(({state, dispatch}) => {
-  const currentPath = getCurrent(state).path; // Will extract currentPath from state
+  const routeError = getRouteError(state); // will extract error message from state.
+  console.log('routeError.message = ', routeError.message);
+  router.push('/error');
   // You can navigate user to error page or call any other redux action.
   dispatch(push('/error'));
 });
 
-// Called when user entered to path(/) 
-router.onEnter('/', ({state}, cb) => {
+// Called when user entered to path(/)
+const onEnter = ({state}, cb) => {
   console.log('[top]loading ...', state);
   setTimeout(() => {
     // User's navigation action will blocked untill `cb` called.
@@ -77,14 +76,21 @@ router.onEnter('/', ({state}, cb) => {
     cb();
     // If you call `cb` with falsy value or Error object,
     // Router-redux will emit router's onError. and stop routing to path(/).
-    // cb(new Error('some error in top'));
+    // cb(new Error('[top]thrown error'));
   }, 1000);
-});
+};
 
 // Called when user leave from path(/)
-router.onLeave('/', (state) => {
+const onLeave = ({state}) => {
   console.log('[top]leave');
-});
+};
+
+// Simple component to render.
+const Top = () => {
+  return <h1>top</h1>;
+};
+
+router.on('/', <Top onEnter={onEnter} onLeave={onLeave}/>)
 ```
 
 see `example/components` for full example.
@@ -96,7 +102,6 @@ see `example/components` for full example.
 ## Documentation
 
 - API idea came from [react-router-redux](https://github.com/reactjs/react-router-redux) thanks!
-- Includes modified version of [object-assign](https://github.com/sindresorhus/object-assign) to reduce library size. thanks!
 
 ### `routerMiddleware`
 router-redux's middleware function for redux.
@@ -104,7 +109,7 @@ You need to register it in your `createStore` function.
 
 ```javascript
 // In store.js
-import routerCreator, {routerMiddleware} from 'router-redux';
+import createRouter, {routerMiddleware} from 'router-redux';
 
 import reducer from './reducers/index.js';
 const middlewares = [routerMiddleware];
@@ -112,7 +117,7 @@ const store = createStore(reducer, compose(
   applyMiddleware(...middlewares)
 ));
 
-export const router = routerCreator(store);
+export const router = createRouter(store);
 ```
 
 ### `routerReducer()`
@@ -131,17 +136,37 @@ const rootReducer = combineReducers({
 export default rootReducer;
 ```
 
-### `routerCreator(store)`
-When you import `router-redux`, it gives you `routerCreator`,
+### `createRouter(store)`
+When you import `router-redux`, it gives you `createRouter`,
 You need to pass `store` to `routerCreator`, and it returns `router` for later use. 
 
-- `export const router = routerCreator(store)`
+- `export const router = createRouter(store)`
+
+Optionally you can pass [history](https://github.com/ReactTraining/history) to createRouter like below.
+
+```
+import createHistory from 'history/createBrowserHistory'
+const history = createHistory({basename: '/router-redux'});
+export const router = createRouter(store, {history})
+```
 
 ### `router`
-Will created by `routerCreator` above. You can register your own handler function to router.
+Will created by `routerCreator` above.
+`router` will handle these basic router operation.
 
-#### `router.onEnter(path, handler)`
-- `path` can includes `path parameter` like (/foo/:id)
+- register your render/onEnter/onLeave function to the router using `router.on(path, handler)`
+- navigate to other route using `router.push` and other history API based action `replace/go/back/forward`
+
+#### `router.on(path, handler)`
+- will register your render function to router. 
+- `path` can includes `path parameter` like (/foo/:id) and `path` can be '*'(wildcard) for default route.
+- `handler` will accepts these value.
+  - `router.on(path, {render, onEnter, onLeave})` -> is formal syntax.
+  - `router.on(path, <Component onEnter={onEnter} onLeave={onLeave}/>)` -> is jsx version of formal syntax 
+  - `router.on(path, fn)` -> will call passed function as `render` function.
+- if current location matches passed `path` then `router.on` will call passed `onEnter` as initial route.
+
+##### `onEnter(handler)`
 - If you specify `path parameter` to path, `router-redux` will set `route` and `params` properties in `route` object(please refer `selectors` section).
 - `handler({state, dispatch}, [callback])`
 - Called when user navigated to `path` by pushState/popState or directly(by browser's url bar)
@@ -158,7 +183,7 @@ and cancel navigation. (this is useful for handling un-authorized response or Se
 | next                   | next route (`/foo/1`) |
 | last                   | previous route        |
 
-#### `router.onLeave(path, handler)`
+##### `onLeave(handler)`
 - `handler({state, dispatch})`
 - Called when user navigated from `path` by pushState/popState
 - onLeave is called only user navigated from `path` after `initialRouteResolved`, it means you need to bind `onEnter` callback to use onLeave.
@@ -175,42 +200,44 @@ and cancel navigation. (this is useful for handling un-authorized response or Se
 - Called when routeError occurred in `router.onEnter`
 - You can get actual routeError using `getRouteError` selector.
 
-### `match`
-- `math({path, anotherPath})`
-- You can use this function to check currentPath(location) is matched to path.
-- If your path contains `path parameter` then match will return matched params as object.
+### `router.render`
+- `router.render()`
+- After register your routes using `router.on(path, handler)` you need to call `router.render` to render component based on current route(location).
+- if not route matches current location then router will render `*` route as a default route.   
 
 ```javascript
 import {
-  getCurrent,
-  match
+  inject,
+  router
+} from 'example/store.js'
+
+import {
+  getIsLoading
 } from 'router-redux';
 
-const currentPath = getCurrent(state) && getCurrent(state).path;
+router.on('/', <Top onEnter={onEnter} onLeave={onLeave}/>)
 
-// If currentPath = `/`
-match('/', currentPath) // will return `{}`
-
-// If currentPath = `/foo/1`
-match('/foo/:id', currentPath) // will return `{id: 1}`
+const render = inject(({state}) => {
+  if (getIsLoading(state)) {
+    return <h1>loading ...</h1>
+  }
+  return router.render();
+});
 ```
 
-### actions
-- Will creates redux action. You need to call store.dispatch with this action.
+#### `router.push(path)/router.replace(path)`
+- Create push/replace internal action with `path`.
+- When you call push/replace action. router'redux will call pushState/replaceState of [history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
 
-#### `push(path)/replace(path)`
-- Create push/replace action with `path`.
-- When you dispatch push/replace action. router'redux will call pushState/replaceState of [history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
-
-#### `go(page)/back()/forward()`
-- Create go/back/forward action.
+#### `router.go(page)/router.back()/router.forward()`
+- Create go/back/forward internal action.
 - When you dispatch go/back/forward action. router'redux will call go/back/forward of [history API](https://developer.mozilla.org/en-US/docs/Web/API/History_API)
 
 ### selectors
 - Will extracts value from your state. You can use selectors with [reselect](https://github.com/reactjs/reselect) if you like.
 - `route` has these properties
-  - path(`String`): `/foo/1 // Path`
-  - query(`String`): `sample=true // Query param. you can use third-party library(https://github.com/ljharb/qs) to parse query.`
+  - pathname(`String`): `/foo/1 // path`
+  - search(`String`): `sample=true // Query param. you can use third-party library(https://github.com/ljharb/qs) to parse query.`
   - params(`Object`): `{id: 1} // Matched params(declared in onEnter)`
   - route(`String`):  `/foo/:id // Matched route(declared in onEnter)`
 
@@ -227,17 +254,17 @@ match('/foo/:id', currentPath) // will return `{id: 1}`
 - Extracts `routeError` from `state`
 - `routeError` become `true` or `Error`(truthy value) when you call onEnter handler's `callback` with falsy value or Error object.
 
-#### `getIsInitalRouteResolved(state)`
-- Extracts `isInitialRouteResolved` from `state`
-- `isInitialRouteResolved` become `true` after you call initial onEnter handler's `callback`.
-- This is useful for initial page rendering(via browser's url bar navigation).
+#### `getIsLoading(state)`
+- Extracts `isLoading` from `state`
+- `isLoading` become `true` after onEnter called and until onEnter resolved(by call `cb`).
+- This is useful to implement page loading animation.
 
 ## Development
 ### 1. Clone this repo
 
 ```
-git clone https://github.com/subuta/redux-virtual-dom
-cd ./redux-virtual-dom
+git clone https://github.com/subuta/router-redux
+cd ./router-redux
 ```
 
 ### 2. Install dependencies

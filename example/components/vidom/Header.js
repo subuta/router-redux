@@ -1,19 +1,16 @@
 import { node } from 'vidom';
 
 import {
-  inject
+  inject,
+  router
 } from 'example/store.js'
-
-import {
-  push
-} from 'router-redux';
 
 export default inject(({dispatch}) => {
 
   // call pushState instead of location change.
   const pushOnClick = (path) => (e) => {
     e.preventDefault();
-    dispatch(push(path))
+    router.push(path);
   };
 
   const headerStyle = {

@@ -24,6 +24,6 @@ export const getRouteError = (state) => {
   return hasRouting(state) &&  state.routing.routeError
 };
 
-export const getIsLoading = (state) => {
-  return hasRouting(state) &&  state.routing.isLoading
+export const getIsInitalRouteResolved = (state) => {
+  return hasRouting(state) &&  state.routing.isInitialRouteResolved
 };

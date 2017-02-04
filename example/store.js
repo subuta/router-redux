@@ -1,6 +1,8 @@
 import {createStore, applyMiddleware, compose} from 'redux';
 import injectCreator from 'redux-virtual-dom';
-import routerCreator, {routerMiddleware} from 'router-redux';
+import createRouter, {routerMiddleware} from 'router-redux';
+import createHistory from 'history/createBrowserHistory'
+const history = createHistory({basename: '/router-redux'});
 
 import reducer from './reducers/index.js';
 const middlewares = [routerMiddleware];
@@ -12,6 +14,6 @@ const store = createStore(reducer, compose(
 
 // create inject for your store.
 export const {inject, connect} = injectCreator(store);
-export const router = routerCreator(store);
+export const router = createRouter(store, {history});
 
 export default store;

@@ -53,7 +53,18 @@ module.exports = function(config) {
       serveFiles: [
         'lib/**/*.js'
       ],
-      config: "jspm.config.js",
+
+      /**
+       make copy of jspm.config.js, change baseURL to '/base'
+       and save as jspm.karma-config.js,
+       then just return the new config's filename
+       https://github.com/Workiva/karma-jspm/issues/91
+       */
+      browser: (function(){
+        var fs = require('fs');
+        fs.writeFileSync("jspm.karma-config.js", (fs.readFileSync("jspm.config.js") + "").replace(/"baseURL": "\/"/g, '"baseURL": "/base"'));
+        return "jspm.karma-config.js";
+      })(),
       stripExtension: false
     },
 

@@ -11,8 +11,11 @@ export const {
   getLast,
   getNext,
   getRouteError,
-  getIsLoading
+  getIsInitalRouteResolved
 } = selector;
+
+import _match from './match.js'
+export const match = _match;
 
 // actions
 import * as actions from './actions.js';
@@ -24,5 +27,5 @@ export const {
   forward
 } = actions;
 
-import createRouter from './router.js';
-export default createRouter;
+import routerCreator from './router.js';
+export default routerCreator;
