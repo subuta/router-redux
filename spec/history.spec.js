@@ -89,17 +89,36 @@ describe('listen', function () {
   it('should call window.addEventListener/removeEventListener with "popstate" event if history.listen not defined', function () {
     window.addEventListener = sandbox.spy(window, 'addEventListener');
     window.removeEventListener = sandbox.spy(window, 'removeEventListener');
-    const fn = sinon.spy();
+    const fn = sinon.spy(() => {});
 
-    const unListen = listen({})(fn)
+    const unListen = listen({})(fn);
 
     assert.equal(window.addEventListener.called, true);
-    assert.equal(window.addEventListener.calledWith('popstate', fn), true);
+    assert.equal(window.addEventListener.firstCall.args[0], 'popstate');
 
     unListen();
 
     assert.equal(window.removeEventListener.called, true);
-    assert.equal(window.removeEventListener.calledWith('popstate', fn), true);
+    assert.equal(window.removeEventListener.firstCall.args[0], 'popstate');
+  });
+
+  it('should call listener on popstate', function () {
+    const fn = sinon.spy(() => {});
+    const unListen = listen({})(fn);
+
+    history.pushState(null, null, '/');
+    const popStateEvent = new PopStateEvent('popstate');
+
+    assert.equal(fn.calledOnce, false);
+    window.dispatchEvent(popStateEvent);
+    assert.equal(fn.calledOnce, true);
+
+    unListen();
+
+    // should not dispatch event.
+    assert.equal(fn.calledOnce, true);
+    window.dispatchEvent(popStateEvent);
+    assert.equal(fn.calledOnce, true);
   });
 });
 

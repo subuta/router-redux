@@ -300,6 +300,7 @@ describe('router.destroy', function () {
 
     assert.equal(store.subscribe.called, true);
     assert.equal(unsubscribe.calledOnce, true);
+    assert.equal(unlisten.calledOnce, true);
   });
 });
 
